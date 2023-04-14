@@ -8,30 +8,30 @@
         Title="MainWindow" Height="600" Width="600">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="20"/>
-            <RowDefinition Height="20"/>
-            <RowDefinition Height="10"/>
-            <RowDefinition Height="520"/>
-            <RowDefinition Height="10"/>
+            <RowDefinition Height="20*"/>
+            <RowDefinition Height="20*"/>
+            <RowDefinition Height="10*"/>
+            <RowDefinition Height="520*"/>
+            <RowDefinition Height="10*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="10" />
-            <ColumnDefinition Width="285" />
-            <ColumnDefinition Width="10" />
-            <ColumnDefinition Width="285" />
-            <ColumnDefinition Width="10" />
+            <ColumnDefinition Width="10*" />
+            <ColumnDefinition Width="285*" />
+            <ColumnDefinition Width="10*" />
+            <ColumnDefinition Width="285*" />
+            <ColumnDefinition Width="10*" />
         </Grid.ColumnDefinitions>
-        <Menu VerticalAlignment="Center" Grid.ColumnSpan="3" Grid.Column="1">
+        <Menu VerticalAlignment="Center" Grid.Column="1" Grid.ColumnSpan="3">
             <MenuItem Header="File" >
-                <MenuItem Header="Open Data"/>
+                <MenuItem Header="Open Data" Click="OpenDataFile"/>
             </MenuItem>
         </Menu>
 
-        <TextBlock Grid.Column="1" Grid.Row ="1" Text="Source database structure" Background="Yellow"></TextBlock>
+        <TextBlock Grid.Column="1" Grid.Row ="1" Text="Source database structure" Background="Yellow" ></TextBlock>
         <TextBlock Grid.Column="3" Grid.Row ="1" Text="Table" Background="Yellow"></TextBlock>
 
         <TreeView Grid.Column="1" Grid.Row="3">
-            <TreeViewItem Name="dataTree"/>
+            <TreeViewItem Name="folderTree"/>
         </TreeView>
         <DataGrid Grid.Column="3" Grid.Row="3" Name="DataTable" AutoGenerateColumns="False"/>
     </Grid>
