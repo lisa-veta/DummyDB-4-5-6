@@ -6,23 +6,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.Windows.Forms;
 using System.Collections.Generic;
 
 namespace HardLab5
 {
-
+    
     public partial class MainWindow : Window
     {
-
+        Dictionary<TableScheme, Table> keyTables = new Dictionary<TableScheme, Table>();
         public MainWindow()
         {
             InitializeComponent();
@@ -42,11 +34,27 @@ namespace HardLab5
 
             folderTree.Header = folderName;
 
-            foreach(string file in Directory.EnumerateFiles(folderPath))
+            foreach(string fileScheme in Directory.EnumerateFiles(folderPath))
             {
-                folderTree.Items.Add(file.Split('\\')[(file.Split('\\').Length-1)]);
+                if (fileScheme.Contains("json"))
+                {
+                    TableScheme tableScheme = TableScheme.ReadFile(fileScheme);
+                    foreach(string fileTable in Directory.EnumerateFiles(folderPath))
+                    {
+                        if (fileScheme.Contains("csv"))
+                        {
+                            try
+                            {
+                                Table table = TableData.GetInfoFromTable(fileScheme, fileTable);
+                                keyTables.Add(tableScheme, table);
+                            }
+                            catch { continue; }
+                        }
+                    }
+                    folderTree.Items.Add(fileScheme.Split('\\')[(fileScheme.Split('\\').Length - 1)]);
+                }
+                
             }
-
         }
 
     }
