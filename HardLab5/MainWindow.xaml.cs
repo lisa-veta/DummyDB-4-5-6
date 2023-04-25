@@ -78,43 +78,43 @@ namespace HardLab5
         public void TableSelected(object sender, RoutedEventArgs e)
         {
             //DataTable.ItemsSource = LoadCollectionData();
-            //DataTable.Columns.Clear();
-            string tableName = ((TreeViewItem)sender).Header.ToString();
+            DataTable.Columns.Clear();
+            string tableName = ((TreeViewItem)sender).Header.ToString().Replace(".csv", "");
             TextBox1.Text = tableName;
 
-            //foreach (var keyTable in keyTables)
-            //{
-            //    if (keyTable.Key.Name == tableName)
-            //    {
-            //        //List<RowAdapter> rowsData = new List<RowAdapter>();
-            //        DataTable dt = new DataTable();
-            //        foreach (Row row in keyTable.Value.Rows)
-            //        {
-            //            //List<object> rowData = new List<object>();
-            //            foreach (object cell in row.Data.Values)
-            //            {
-            //                //rowData.Add(cell);
-            //                dt.Rows.Add(row);
-            //            }
-            //            //rowsData.Add(new RowAdapter() { Data = rowData });
-            //        }
+            foreach (var keyTable in keyTables)
+            {
+                if (keyTable.Key.Name == tableName)
+                {
+                    List<RowAdapter> rowsData = new List<RowAdapter>();
+                    //DataTable dt = new DataTable();
+                    foreach (Row row in keyTable.Value.Rows)
+                    {
+                        List<object> rowData = new List<object>();
+                        foreach (object cell in row.Data.Values)
+                        {
+                            rowData.Add(cell);
+                            //dt.Rows.Add(row);
+                        }
+                        rowsData.Add(new RowAdapter() { Data = rowData });
+                    }
 
-            //        //DataTable.ItemsSource = rowsData;
+                    DataTable.ItemsSource = rowsData;
 
-            //        for (int i = 0; i < keyTable.Key.Columns.Count; i++)
-            //        {
-            //            DataGridTextColumn tableTextColumn = new DataGridTextColumn()
-            //            {
-            //                Header = keyTable.Key.Columns[i].Name,
-            //                Binding = new System.Windows.Data.Binding($"DataTables[{i}]")
-            //            };
+                    for (int i = 0; i < keyTable.Key.Columns.Count; i++)
+                    {
+                        DataGridTextColumn tableTextColumn = new DataGridTextColumn()
+                        {
+                            Header = keyTable.Key.Columns[i].Name,
+                            Binding = new System.Windows.Data.Binding($"Data[{i}]")
+                        };
 
-            //            DataTable.Columns.Add(tableTextColumn);
-            //        }
-            //        DataTable.ItemsSource = dt.DefaultView;
-            //        break;
-            //    }
-            //}
+                        DataTable.Columns.Add(tableTextColumn);
+                    }
+                    //DataTable.ItemsSource = dt.DefaultView;
+                    break;
+                }
+            }
         }
 
         private void TableUnselected(object sender, RoutedEventArgs e)
