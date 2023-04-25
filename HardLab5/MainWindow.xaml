@@ -11,7 +11,8 @@
             <RowDefinition Height="20*"/>
             <RowDefinition Height="20*"/>
             <RowDefinition Height="10*"/>
-            <RowDefinition Height="520*"/>
+            <RowDefinition Height="480*"/>
+            <RowDefinition Height="40*"/>
             <RowDefinition Height="10*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
@@ -29,10 +30,11 @@
 
         <TextBlock Grid.Column="1" Grid.Row ="1" Text="Source database structure" Background="Yellow" ></TextBlock>
         <TextBlock Grid.Column="3" Grid.Row ="1" Text="Table" Background="Yellow"></TextBlock>
-
+        <TextBox Name="TextBox1" Grid.Column="1" Grid.Row ="4" Grid.ColumnSpan="3"></TextBox>
         <TreeView Grid.Column="1" Grid.Row="3">
-            <TreeViewItem Name="folderTree"/>
+            <TreeViewItem Name="folderTree" />
         </TreeView>
-        <DataGrid Grid.Column="3" Grid.Row="3" Name="DataTable" AutoGenerateColumns="False"/>
+        <DataGrid Grid.Column="3" Grid.Row="3" Name="DataTable" AutoGenerateColumns="True" 
+                  RowBackground="LightYellow" AlternatingRowBackground="LightBlue" />
     </Grid>
 </Window>
