@@ -84,11 +84,13 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Column.cs" />
-    <Compile Include="Row.cs" />
-    <Compile Include="Table.cs" />
-    <Compile Include="TableData.cs" />
-    <Compile Include="TableScheme.cs" />
+    <Compile Include="DelegateCommand.cs" />
+    <Compile Include="ViewModel\MainViewModel.cs" />
+    <Compile Include="Model\Column.cs" />
+    <Compile Include="Model\Row.cs" />
+    <Compile Include="Model\Table.cs" />
+    <Compile Include="Model\TableData.cs" />
+    <Compile Include="Model\TableScheme.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -128,6 +130,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="View\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
