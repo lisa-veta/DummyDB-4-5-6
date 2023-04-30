@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.IO;
@@ -7,6 +8,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms;
 using System.Windows.Input;
+using System.Windows.Media;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace HardLab5
@@ -21,6 +23,8 @@ namespace HardLab5
         }
 
         Dictionary<TableScheme, Table> keyTables = new Dictionary<TableScheme, Table>();
+        public int countOfTables;
+        public int countOfSchemes;
 
         private DataTable _dataTable;
         public DataTable DataTable
@@ -33,7 +37,7 @@ namespace HardLab5
             }
         }
 
-        public ICommand OpenSourceClick => new DelegateCommand(param =>
+        public ICommand OpenDataFile => new DelegateCommand(param =>
         {
             FolderBrowserDialog openFolderDialog = new FolderBrowserDialog();
             string folderPath = "";
@@ -44,13 +48,22 @@ namespace HardLab5
             }
 
             string folderName = folderPath.Split('\\')[folderPath.Split('\\').Length - 1];
-
             ((MainWindow)System.Windows.Application.Current.MainWindow).folderTree.Header = folderName;
-            string fileTable1 = "";
+
+            countOfSchemes = countOfTables = 0;
+            GetEquals(folderPath);
+            
+        });
+
+
+        private void GetEquals(string folderPath)
+        {
+            ((MainWindow)System.Windows.Application.Current.MainWindow).folderTree.Items.Clear();
             foreach (string fileScheme in Directory.EnumerateFiles(folderPath))
             {
                 if (fileScheme.Contains("json"))
                 {
+                    countOfSchemes++;
                     TableScheme tableScheme = TableScheme.ReadFile(fileScheme);
                     foreach (string fileTable in Directory.EnumerateFiles(folderPath))
                     {
@@ -58,31 +71,54 @@ namespace HardLab5
                         {
                             try
                             {
-                                fileTable1 = fileTable;
                                 Table table = TableData.GetInfoFromTable(fileScheme, fileTable);
                                 keyTables.Add(tableScheme, table);
                                 TreeViewItem treeViewItem = new TreeViewItem();
-                                treeViewItem.Header = fileTable1.Split('\\')[(fileTable1.Split('\\').Length - 1)];
-                                ((MainWindow)System.Windows.Application.Current.MainWindow).TextBox1.Text = "кипит работа";
+                                treeViewItem.Header = fileTable.Split('\\')[(fileTable.Split('\\').Length - 1)];
                                 treeViewItem.Selected += TableSelected;
                                 treeViewItem.Unselected += TableUnselected;
+
                                 ((MainWindow)System.Windows.Application.Current.MainWindow).folderTree.Items.Add(treeViewItem);
                             }
-                            catch { continue; }
+                            catch (Exception ex)
+                            {
+                                //((MainWindow)System.Windows.Application.Current.MainWindow).TextBox1.Text = (ex.Message).ToString();
+                                continue;
+                            }
                         }
                     }
                     ((MainWindow)System.Windows.Application.Current.MainWindow).folderTree.Items.Add(fileScheme.Split('\\')[(fileScheme.Split('\\').Length - 1)]);
                 }
+                if (fileScheme.Contains("csv"))
+                {
+                    countOfTables++;
+                }
             }
-        });
+            GetExeption();
+        }
 
+        private void GetExeption()
+        {
+            if (countOfTables > countOfSchemes)
+            { 
+                ((MainWindow)System.Windows.Application.Current.MainWindow).TextBox1.Text = "!ОШИБКА! не все таблицы будут отображены, так как в файле недостаточно схем";
+
+            }
+            else if (countOfTables < countOfSchemes)
+            {
+                ((MainWindow)System.Windows.Application.Current.MainWindow).TextBox1.Text = "!ОШИБКА! лишние схемы";
+            }
+            else
+            {
+                ((MainWindow)System.Windows.Application.Current.MainWindow).TextBox1.Clear();
+            }
+        }
 
         public void TableSelected(object sender, RoutedEventArgs e)
         {
             ((MainWindow)System.Windows.Application.Current.MainWindow).DataGrid.Columns.Clear();
             string tableName = ((TreeViewItem)sender).Header.ToString().Replace(".csv", "");
             DataTable dataTable = new DataTable();
-            ((MainWindow)System.Windows.Application.Current.MainWindow).TextBox1.Text = $"вы жмали на {tableName}";
             foreach (var keyTable in keyTables)
             {
                 if (keyTable.Key.Name == tableName)

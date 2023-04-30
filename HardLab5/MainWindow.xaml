@@ -24,13 +24,14 @@
         </Grid.ColumnDefinitions>
         <Menu VerticalAlignment="Center" Grid.Column="1" Grid.ColumnSpan="3">
             <MenuItem Header="File" >
-                <MenuItem Command="{Binding OpenSourceClick}" Header="Open Data"/>
+                <MenuItem Command="{Binding  OpenDataFile}" Header="Open Data"/>
             </MenuItem>
         </Menu>
 
-        <TextBlock Grid.Column="1" Grid.Row ="1" Text="Source database structure" Background="Yellow" ></TextBlock>
-        <TextBlock Grid.Column="3" Grid.Row ="1" Text="Table" Background="Yellow"></TextBlock>
-        <TextBox Name="TextBox1" Grid.Column="1" Grid.Row ="4" Grid.ColumnSpan="3"></TextBox>
+        <TextBlock Grid.Column="1" Grid.Row ="1" Text="Source database structure" Background="DarkSeaGreen" ></TextBlock>
+        <TextBlock Grid.Column="3" Grid.Row ="1" Text="Table" Background="DarkSeaGreen"></TextBlock>
+        <TextBox Name="TextBox1" Grid.Column="1" Grid.Row ="4" Grid.ColumnSpan="3" Foreground="Salmon">
+        </TextBox>
         <TreeView Grid.Column="1" Grid.Row="3">
             <TreeViewItem Name="folderTree" />
         </TreeView>
