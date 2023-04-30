@@ -34,7 +34,6 @@
         <TreeView Grid.Column="1" Grid.Row="3">
             <TreeViewItem Name="folderTree" />
         </TreeView>
-        <DataGrid Grid.Column="3" Grid.Row="3" Name="DataTable" AutoGenerateColumns="True" 
-                  RowBackground="LightYellow" AlternatingRowBackground="LightBlue" />
+        <DataGrid Name="DataGrid"  Grid.Column="3" Grid.Row="3"  AutoGenerateColumns="False"/>
     </Grid>
 </Window>

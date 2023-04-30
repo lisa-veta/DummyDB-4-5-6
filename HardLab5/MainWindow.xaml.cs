@@ -11,21 +11,34 @@ using System.Collections.Generic;
 using System.Windows.Controls;
 using System;
 using System.Data;
+using System.Runtime.CompilerServices;
 
 namespace HardLab5
 {
     /// <summary>
     ///  DataContext="{Binding DataTable}" ItemsSource="{Binding DefaultView}"
-    ///  
-    /// 
     /// Selected="TableSelected"
-               /// Unselected="TableUnselected"
+    /// Unselected="TableUnselected"
+    /// 
+    /// 
+    /// RowBackground="LightYellow" AlternatingRowBackground="LightBlue"
     /// </summary>
-    public partial class MainWindow : Window
+    /// 
+
+
+    public partial class MainWindow : Window, INotifyPropertyChanged
     {
         Dictionary<TableScheme, Table> keyTables = new Dictionary<TableScheme, Table>();
+        
 
-       
+        ///public DataTable DT { get; set; }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        protected void OnPropertyChanged([CallerMemberName] string prop = "")
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
+        }
 
         public MainWindow()
         {
@@ -39,7 +52,7 @@ namespace HardLab5
 
             if (openFolderDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-                folderPath = openFolderDialog.SelectedPath; 
+                folderPath = openFolderDialog.SelectedPath;
             }
 
             string folderName = folderPath.Split('\\')[folderPath.Split('\\').Length - 1];
@@ -51,7 +64,7 @@ namespace HardLab5
                 if (fileScheme.Contains("json"))
                 {
                     TableScheme tableScheme = TableScheme.ReadFile(fileScheme);
-                    foreach(string fileTable in Directory.EnumerateFiles(folderPath))
+                    foreach (string fileTable in Directory.EnumerateFiles(folderPath))
                     {
                         if (fileTable.Contains("csv"))
                         {
@@ -62,7 +75,7 @@ namespace HardLab5
                                 keyTables.Add(tableScheme, table);
                                 TreeViewItem treeViewItem = new TreeViewItem();
                                 treeViewItem.Header = fileTable1.Split('\\')[(fileTable1.Split('\\').Length - 1)];
-                                TextBox1.Text = fileTable1.Split('\\')[(fileTable1.Split('\\').Length - 1)];
+                                TextBox1.Text = "кипит работа";
                                 treeViewItem.Selected += TableSelected;
                                 treeViewItem.Unselected += TableUnselected;
                                 folderTree.Items.Add(treeViewItem);
@@ -77,55 +90,52 @@ namespace HardLab5
 
         public void TableSelected(object sender, RoutedEventArgs e)
         {
-            //DataTable.ItemsSource = LoadCollectionData();
-            DataTable.Columns.Clear();
+            // DataGrid.ItemsSource = LoadCollectionData();
+            DataGrid.Columns.Clear();
             string tableName = ((TreeViewItem)sender).Header.ToString().Replace(".csv", "");
-            TextBox1.Text = tableName;
-
+            TextBox1.Text =  $"вы нажали на {tableName}";
             foreach (var keyTable in keyTables)
             {
-                if (keyTable.Key.Name == tableName)
+                //DataGrid.ItemsSource = DataTable.DefaultView;
+
+                List<RowAdapter> rowsData = new List<RowAdapter>();
+                foreach (Row row in keyTable.Value.Rows)
                 {
-                    List<RowAdapter> rowsData = new List<RowAdapter>();
-                    //DataTable dt = new DataTable();
-                    foreach (Row row in keyTable.Value.Rows)
+                    List<object> rowData = new List<object>();
+                    foreach (object cell in row.Data.Values)
                     {
-                        List<object> rowData = new List<object>();
-                        foreach (object cell in row.Data.Values)
-                        {
-                            rowData.Add(cell);
-                            //dt.Rows.Add(row);
-                        }
-                        rowsData.Add(new RowAdapter() { Data = rowData });
+                        rowData.Add(cell);
+                        //dt.Rows.Add(row);
                     }
-
-                    DataTable.ItemsSource = rowsData;
-
-                    for (int i = 0; i < keyTable.Key.Columns.Count; i++)
-                    {
-                        DataGridTextColumn tableTextColumn = new DataGridTextColumn()
-                        {
-                            Header = keyTable.Key.Columns[i].Name,
-                            Binding = new System.Windows.Data.Binding($"Data[{i}]")
-                        };
-
-                        DataTable.Columns.Add(tableTextColumn);
-                    }
-                    //DataTable.ItemsSource = dt.DefaultView;
-                    break;
+                    rowsData.Add(new RowAdapter() { Data = rowData });
                 }
+
+                DataGrid.ItemsSource = rowsData;
+
+                for (int i = 0; i < keyTable.Key.Columns.Count; i++)
+                {
+                    DataGridTextColumn tableTextColumn = new DataGridTextColumn()
+                    {
+                        Header = keyTable.Key.Columns[i].Name,
+                        Binding = new System.Windows.Data.Binding($"Data[{i}]")
+                    };
+
+                    DataGrid.Columns.Add(tableTextColumn);
+                }
+                //DataGrid.ItemsSource = dt.DefaultView;
+                break;
             }
+
         }
 
+        private class RowAdapter
+        {
+            public List<Object> Data { get; set; }
+        }
         private void TableUnselected(object sender, RoutedEventArgs e)
         {
-            DataTable.Columns.Clear();
+            DataGrid.Columns.Clear();
         }
 
     }
-    public class RowAdapter
-    {
-        public List<Object> Data { get; set; }
-    }
-
 }
