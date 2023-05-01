@@ -18,7 +18,7 @@ namespace HardLab5
 
                 if (line.Length > tableScheme.Columns.Count)
                 {
-                    throw new Exception();
+                    throw new ArgumentException();
                 }
                 else
                 {

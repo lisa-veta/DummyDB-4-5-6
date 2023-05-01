@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:HardLab5" d:DataContext="{d:DesignInstance Type=local:MainViewModel}"
         mc:Ignorable="d"
-        Title="MainWindow" Height="600" Width="600">
+        Title="MainWindow" Height="600" Width="800">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="20*"/>
@@ -19,7 +19,7 @@
             <ColumnDefinition Width="10*" />
             <ColumnDefinition Width="285*" />
             <ColumnDefinition Width="10*" />
-            <ColumnDefinition Width="285*" />
+            <ColumnDefinition Width="495*" />
             <ColumnDefinition Width="10*" />
         </Grid.ColumnDefinitions>
         <Menu VerticalAlignment="Center" Grid.Column="1" Grid.ColumnSpan="3">
@@ -37,5 +37,8 @@
         </TreeView>
         <DataGrid Name="DataGrid"  Grid.Column="3" Grid.Row="3"  AutoGenerateColumns="True" ItemsSource="{Binding DataTable}"
                   RowBackground="LightYellow" AlternatingRowBackground="LightBlue"/>
+        <Button x:Name="CreateDB" Command="{Binding  CreateNewDB}" Height="53" Margin="279,0,0,0" VerticalAlignment="Center" Grid.Column="3" Grid.Row="4" Content="Создать БД"/>
     </Grid>
 </Window>
+
+    

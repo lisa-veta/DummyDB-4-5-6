@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+using Window = System.Windows.Window;
 
 namespace HardLab5
 {
@@ -46,6 +47,11 @@ namespace HardLab5
             {
                 folderPath = openFolderDialog.SelectedPath;
             }
+            if(folderPath == "")
+            {
+                ((MainWindow)System.Windows.Application.Current.MainWindow).TextBox1.Text = "!СООБЩЕНИЕ! Вы не выбрали папку";
+                return;
+            }
 
             string folderName = folderPath.Split('\\')[folderPath.Split('\\').Length - 1];
             ((MainWindow)System.Windows.Application.Current.MainWindow).folderTree.Header = folderName;
@@ -78,6 +84,10 @@ namespace HardLab5
                                 treeViewItem.Selected += TableSelected;
                                 treeViewItem.Unselected += TableUnselected;
 
+                                foreach(Column column in table.Scheme.Columns)
+                                {
+                                    treeViewItem.Items.Add(column.Name + " - " + column.Type);
+                                }
                                 ((MainWindow)System.Windows.Application.Current.MainWindow).folderTree.Items.Add(treeViewItem);
                             }
                             catch (Exception ex)
@@ -99,14 +109,13 @@ namespace HardLab5
 
         private void GetExeption()
         {
-            if (countOfTables > countOfSchemes)
+            if (countOfTables > countOfSchemes || keyTables.Count < countOfTables)
             { 
-                ((MainWindow)System.Windows.Application.Current.MainWindow).TextBox1.Text = "!ОШИБКА! не все таблицы будут отображены, так как в файле недостаточно схем";
-
+                ((MainWindow)System.Windows.Application.Current.MainWindow).TextBox1.Text = "!СООБЩЕНИЕ! не все таблицы будут отображены, так как в файле недостаточно схем\\корректных схем";
             }
             else if (countOfTables < countOfSchemes)
             {
-                ((MainWindow)System.Windows.Application.Current.MainWindow).TextBox1.Text = "!ОШИБКА! лишние схемы";
+                ((MainWindow)System.Windows.Application.Current.MainWindow).TextBox1.Text = "!СООБЩЕНИЕ! найдены лишние схемы";
             }
             else
             {
@@ -147,5 +156,18 @@ namespace HardLab5
         {
             ((MainWindow)System.Windows.Application.Current.MainWindow).DataGrid.Columns.Clear();
         }
+
+        public static WindowDB wind;
+        public ICommand CreateNewDB => new DelegateCommand(param =>
+        {
+            if (wind == null)
+            {
+                wind = new WindowDB();
+                wind.ShowDialog();
+            }
+            else wind.Activate();
+        });
+
+
     }
 }
