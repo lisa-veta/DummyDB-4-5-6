@@ -15,14 +15,14 @@ using System.Windows.Shapes;
 namespace HardLab5
 {
     /// <summary>
-    /// Логика взаимодействия для WindowDB.xaml
+    /// Логика взаимодействия для Window1.xaml
     /// </summary>
-    public partial class WindowDB : Window
+    public partial class WindowTable : Window
     {
-        public WindowDB()
+        public WindowTable()
         {
             InitializeComponent();
-            DataContext = new ViewModelNewDB();
+            DataContext = new ViewModelNewTable();
         }
     }
 }

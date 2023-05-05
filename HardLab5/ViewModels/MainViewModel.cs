@@ -169,5 +169,17 @@ namespace HardLab5
         });
 
 
+        public static WindowTable wind1;
+        public ICommand CreateNewTable => new DelegateCommand(param =>
+        {
+            if (wind == null)
+            {
+                wind1 = new WindowTable();
+                wind1.ShowDialog();
+            }
+            else wind1.Activate();
+        });
+
+
     }
 }

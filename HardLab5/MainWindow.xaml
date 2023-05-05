@@ -19,7 +19,8 @@
             <ColumnDefinition Width="10*" />
             <ColumnDefinition Width="285*" />
             <ColumnDefinition Width="10*" />
-            <ColumnDefinition Width="495*" />
+            <ColumnDefinition Width="247*" />
+            <ColumnDefinition Width="247*" />
             <ColumnDefinition Width="10*" />
         </Grid.ColumnDefinitions>
         <Menu VerticalAlignment="Center" Grid.Column="1" Grid.ColumnSpan="3">
@@ -29,15 +30,16 @@
         </Menu>
 
         <TextBlock Grid.Column="1" Grid.Row ="1" Text="Source database structure" Background="DarkSeaGreen" ></TextBlock>
-        <TextBlock Grid.Column="3" Grid.Row ="1" Text="Table" Background="DarkSeaGreen"></TextBlock>
-        <TextBox Name="TextBox1" Grid.Column="1" Grid.Row ="4" Grid.ColumnSpan="3" Foreground="Salmon">
+        <TextBlock Grid.Column="3" Grid.Row ="1" Text="Table" Background="DarkSeaGreen" Grid.ColumnSpan="2"></TextBlock>
+        <TextBox Name="TextBox1" Grid.Column="1" Grid.Row ="4" Grid.ColumnSpan="3" Foreground="Salmon" >
         </TextBox>
         <TreeView Grid.Column="1" Grid.Row="3">
             <TreeViewItem Name="folderTree" />
         </TreeView>
         <DataGrid Name="DataGrid"  Grid.Column="3" Grid.Row="3"  AutoGenerateColumns="True" ItemsSource="{Binding DataTable}"
-                  RowBackground="LightYellow" AlternatingRowBackground="LightBlue"/>
-        <Button x:Name="CreateDB" Command="{Binding  CreateNewDB}" Height="53" Margin="279,0,0,0" VerticalAlignment="Center" Grid.Column="3" Grid.Row="4" Content="Создать БД"/>
+                  RowBackground="LightYellow" AlternatingRowBackground="LightBlue" Grid.ColumnSpan="2"/>
+        <Button x:Name="CreateDB" Command="{Binding  CreateNewDB}"   Grid.Column="3" Grid.Row="4" Content="Создать БД"/>
+        <Button x:Name="CreateNewTable" Command="{Binding  CreateNewTable}" Grid.Column="4" Grid.Row="4" Content="Создать таблицу" Grid.ColumnSpan="2"/>
     </Grid>
 </Window>
 

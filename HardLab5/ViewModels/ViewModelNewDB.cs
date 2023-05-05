@@ -7,7 +7,7 @@ using System.Windows.Input;
 
 namespace HardLab5
 {
-    class MainViewModelNewData : INotifyPropertyChanged
+    class ViewModelNewDB : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -52,6 +52,11 @@ namespace HardLab5
 
         public ICommand Create => new DelegateCommand(param =>
         {
+            if(folderPath == "" || Message == "")
+            {
+                MessageBox.Show("Вы не ввели имя БД или не выбрали путь!");
+                return;
+            }
             Directory.CreateDirectory(folderPath);
             MessageBox.Show("Папка для новой БД успешно создана! " + Message1 + "\n");
             Message = "";
