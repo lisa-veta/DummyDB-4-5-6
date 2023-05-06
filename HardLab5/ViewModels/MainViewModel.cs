@@ -90,7 +90,7 @@ namespace HardLab5
                                 }
                                 ((MainWindow)System.Windows.Application.Current.MainWindow).folderTree.Items.Add(treeViewItem);
                             }
-                            catch (Exception ex)
+                            catch //(Exception ex)
                             {
                                 //((MainWindow)System.Windows.Application.Current.MainWindow).TextBox1.Text = (ex.Message).ToString();
                                 continue;

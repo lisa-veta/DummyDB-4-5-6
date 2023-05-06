@@ -3,10 +3,51 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:HardLab5"
+        xmlns:local="clr-namespace:HardLab5" xmlns:sys="clr-namespace:System;assembly=mscorlib" d:DataContext="{d:DesignInstance Type=local:ViewModelNewTable}"
         mc:Ignorable="d"
-        Title="WindowTable" Height="450" Width="800">
+        Title="WindowTable" Height="500" Width="300">
     <Grid>
-        
+        <Grid.RowDefinitions>
+            <RowDefinition Height="5*"/>
+            <RowDefinition Height="5*"/>
+            <RowDefinition Height="10*"/>
+            <RowDefinition Height="10*"/>
+            <RowDefinition Height="10*"/>
+            <RowDefinition Height="10*"/>
+            <RowDefinition Height="10*"/>
+            <RowDefinition Height="10*"/>
+            <RowDefinition Height="5*"/>
+            <RowDefinition Height="5*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="10*"/>
+            <ColumnDefinition Width="10*"/>
+            <ColumnDefinition Width="10*"/>
+            <ColumnDefinition Width="10*"/>
+            <ColumnDefinition Width="10*"/>
+            <ColumnDefinition Width="10*"/>
+        </Grid.ColumnDefinitions>
+
+        <TextBlock Grid.ColumnSpan="3" VerticalAlignment="Center" HorizontalAlignment="Center" >Название таблицы:</TextBlock>
+        <TextBox Text="{Binding  Message}" x:Name="NameTable" Grid.Column="3" Grid.ColumnSpan="3"></TextBox>
+        <Button x:Name="addColumns" Command="{Binding  CreateColumns}" Grid.Column="1" Grid.Row="1" Content="Добавить столбец" Grid.ColumnSpan="4"/>
+        <ScrollViewer Grid.Row="2"  Grid.Column="1" Grid.ColumnSpan="4"  Grid.RowSpan="6">
+            <ItemsControl ItemsSource="{Binding Items}" >
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Vertical">
+                            <TextBox Text="{Binding Text}" Grid.ColumnSpan="2"/>
+                            <ComboBox  Grid.Column="2" Grid.ColumnSpan="2" SelectedItem ="{Binding Type}">
+                                <sys:String>Строка</sys:String>
+                                <sys:String>Число</sys:String>
+                            </ComboBox>
+
+                        </StackPanel>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+        <Button x:Name="CreateTable" Command="{Binding  CreateTable}" Grid.Column="1" Grid.Row="8" Content="Создать" Grid.ColumnSpan="4"/>
+        <TextBox Text="{Binding  Message}" x:Name="Name" Grid.Row="9" Grid.ColumnSpan="6"></TextBox>
     </Grid>
 </Window>
