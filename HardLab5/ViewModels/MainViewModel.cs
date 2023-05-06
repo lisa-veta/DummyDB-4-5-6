@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Data;
 using System.IO;
 using System.Runtime.CompilerServices;
+using System.Runtime.Remoting.Messaging;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms;
@@ -26,6 +27,7 @@ namespace HardLab5
         Dictionary<TableScheme, Table> keyTables = new Dictionary<TableScheme, Table>();
         public int countOfTables;
         public int countOfSchemes;
+        public static string folderPath = "";
 
         private DataTable _dataTable;
         public DataTable DataTable
@@ -41,7 +43,7 @@ namespace HardLab5
         public ICommand OpenDataFile => new DelegateCommand(param =>
         {
             FolderBrowserDialog openFolderDialog = new FolderBrowserDialog();
-            string folderPath = "";
+            folderPath = "";
 
             if (openFolderDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
@@ -62,7 +64,7 @@ namespace HardLab5
         });
 
 
-        private void GetEquals(string folderPath)
+        public void GetEquals(string folderPath)
         {
             ((MainWindow)System.Windows.Application.Current.MainWindow).folderTree.Items.Clear();
             foreach (string fileScheme in Directory.EnumerateFiles(folderPath))
@@ -157,6 +159,15 @@ namespace HardLab5
             ((MainWindow)System.Windows.Application.Current.MainWindow).DataGrid.Columns.Clear();
         }
 
+        public ICommand UpdateFile => new DelegateCommand(param =>
+        {
+            if(folderPath == "")
+            {
+                return;
+            }
+            GetEquals(folderPath);
+        });
+
         public static WindowDB wind;
         public ICommand CreateNewDB => new DelegateCommand(param =>
         {
@@ -165,19 +176,26 @@ namespace HardLab5
                 wind = new WindowDB();
                 wind.ShowDialog();
             }
-            else wind.Activate();
+            //else wind.Activate();
         });
 
 
         public static WindowTable wind1;
         public ICommand CreateNewTable => new DelegateCommand(param =>
         {
-            if (wind == null)
+            if (((MainWindow)System.Windows.Application.Current.MainWindow).folderTree.Header != null)
             {
-                wind1 = new WindowTable();
-                wind1.ShowDialog();
+                //if (wind == null)
+                //{
+                    wind1 = new WindowTable();
+                    wind1.ShowDialog();
+                //}
+                //else wind1.Activate();
             }
-            else wind1.Activate();
+            else
+            {
+                System.Windows.MessageBox.Show("Сначала выберите БД или создайте ее");
+            }
         });
 
 

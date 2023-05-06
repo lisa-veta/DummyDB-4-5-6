@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -23,6 +24,20 @@ namespace HardLab5
         public static TableScheme ReadFile(string path)
         {
             return JsonSerializer.Deserialize<TableScheme>(File.ReadAllText(path));
+        }
+
+        public static void CreateFile(List<Column> columnsTable, string nameTable, string path)
+        {
+            var tableScheme = new TableScheme
+            {
+                Name = nameTable,
+                Columns = columnsTable
+            };
+            string jsonNewScheme = JsonSerializer.Serialize<TableScheme>(tableScheme);
+            /// File.Create(path + $"\\{nameTable}.json");
+            string pathOfScheme = path + $"\\{nameTable}.json";
+            string pathOfTable = path + $"\\{nameTable}.csv";
+            File.WriteAllText(path, jsonNewScheme);
         }
     }
 }

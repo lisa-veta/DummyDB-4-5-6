@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:HardLab5" xmlns:sys="clr-namespace:System;assembly=mscorlib" d:DataContext="{d:DesignInstance Type=local:ViewModelNewTable}"
         mc:Ignorable="d"
         Title="WindowTable" Height="500" Width="300">
-    <Grid>
+    <Grid  Background="Lavender">
         <Grid.RowDefinitions>
             <RowDefinition Height="5*"/>
             <RowDefinition Height="5*"/>
@@ -29,25 +29,30 @@
         </Grid.ColumnDefinitions>
 
         <TextBlock Grid.ColumnSpan="3" VerticalAlignment="Center" HorizontalAlignment="Center" >Название таблицы:</TextBlock>
-        <TextBox Text="{Binding  Message}" x:Name="NameTable" Grid.Column="3" Grid.ColumnSpan="3"></TextBox>
-        <Button x:Name="addColumns" Command="{Binding  CreateColumns}" Grid.Column="1" Grid.Row="1" Content="Добавить столбец" Grid.ColumnSpan="4"/>
+        <TextBox Text="{Binding  Message}" x:Name="NameTable" Grid.Column="3" Grid.ColumnSpan="3" TextWrapping="Wrap"  TextAlignment="Center"></TextBox>
+        <Button x:Name="addColumns" Command="{Binding  CreateColumns}" Grid.Column="1" Grid.Row="1" Content="Добавить столбец" Grid.ColumnSpan="4"  Background="DarkSeaGreen"/>
         <ScrollViewer Grid.Row="2"  Grid.Column="1" Grid.ColumnSpan="4"  Grid.RowSpan="6">
             <ItemsControl ItemsSource="{Binding Items}" >
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <StackPanel Orientation="Vertical">
+                            <TextBlock>Название:</TextBlock>
                             <TextBox Text="{Binding Text}" Grid.ColumnSpan="2"/>
+                            <TextBlock>Тип:</TextBlock>
                             <ComboBox  Grid.Column="2" Grid.ColumnSpan="2" SelectedItem ="{Binding Type}">
-                                <sys:String>Строка</sys:String>
-                                <sys:String>Число</sys:String>
+                                <sys:String>string</sys:String>
+                                <sys:String>int</sys:String>
+                                <sys:String>uint</sys:String>
+                                <sys:String>float</sys:String>
+                                <sys:String>double</sys:String>
+                                <sys:String>datetime</sys:String>
                             </ComboBox>
-
                         </StackPanel>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
         </ScrollViewer>
-        <Button x:Name="CreateTable" Command="{Binding  CreateTable}" Grid.Column="1" Grid.Row="8" Content="Создать" Grid.ColumnSpan="4"/>
-        <TextBox Text="{Binding  Message}" x:Name="Name" Grid.Row="9" Grid.ColumnSpan="6"></TextBox>
+        <Button x:Name="CreateTable" Command="{Binding  CreateTable}" Grid.Column="1" Grid.Row="8" Content="Создать" Grid.ColumnSpan="4"  Background="DarkSeaGreen"/>
+        
     </Grid>
 </Window>

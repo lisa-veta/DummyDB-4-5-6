@@ -1,9 +1,14 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
 using System.Runtime.CompilerServices;
+using System.Runtime.Remoting.Messaging;
+using System.Text.Json;
 using System.Windows.Forms;
 using System.Windows.Input;
+using System.Windows.Shapes;
+using System.Xml;
 using System.Xml.Linq;
 
 namespace HardLab5
@@ -64,18 +69,46 @@ namespace HardLab5
 
         public ICommand CreateTable => new DelegateCommand(param =>
         {
-            ColumnsOfNewTable.Clear();
+            string name = Message;
+            List<Column> columns = new List<Column>();
             foreach (var item in Items)
             {
-                ColumnsOfNewTable.Add(item.Text, item.Type);
-                Message = item.Type;
+                Column column = new Column();
+                if(item.Text == null || item.Type == null || name == null)
+                {
+                    MessageBox.Show("Данные не заполнены до конца");
+                    return;
+                }
+                column.Name = item.Text;
+                column.Type = item.Type;
+                columns.Add(column);
             }
-            foreach(var key in ColumnsOfNewTable.Values)
-            {
-                Message = key;
-                break;
-            }
+            //TableScheme.CreateFile(columns, name, MainViewModel.folderPath);
+            //MainViewModel.GetEquals(MainViewModel.folderPath);
 
+            var tableScheme = new TableScheme
+            {
+                Name = name,
+                Columns = columns
+            };
+            string jsonNewScheme = JsonSerializer.Serialize<TableScheme>(tableScheme);
+            string pathOfScheme = MainViewModel.folderPath + $"\\{name}.json";
+            string pathOfTable = MainViewModel.folderPath + $"\\{name}.csv";
+            File.WriteAllText(pathOfScheme, jsonNewScheme);
+            File.Create(pathOfTable);
+
+            System.Windows.MessageBox.Show("Успешно!");
+            //CloseWindow(param);
         });
+        //private void CloseWindow(object obj)
+        //{
+        //    Close(obj, true);
+        //}
+        //void Close(object obj, bool dialogResult)
+        //{
+        //    var w = ((WindowTable)(System.Windows.Window)obj);
+        //    w.DialogResult = dialogResult;
+        //    w.Close();
+        //}
     }
 }
