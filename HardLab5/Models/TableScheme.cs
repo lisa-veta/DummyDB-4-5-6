@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Xml.Linq;
 
 namespace HardLab5
 {
@@ -26,18 +27,13 @@ namespace HardLab5
             return JsonSerializer.Deserialize<TableScheme>(File.ReadAllText(path));
         }
 
-        public static void CreateFile(List<Column> columnsTable, string nameTable, string path)
+        public static void SafeNewData(TableScheme tableScheme)
         {
-            var tableScheme = new TableScheme
-            {
-                Name = nameTable,
-                Columns = columnsTable
-            };
             string jsonNewScheme = JsonSerializer.Serialize<TableScheme>(tableScheme);
-            /// File.Create(path + $"\\{nameTable}.json");
-            string pathOfScheme = path + $"\\{nameTable}.json";
-            string pathOfTable = path + $"\\{nameTable}.csv";
-            File.WriteAllText(path, jsonNewScheme);
+            string pathOfScheme = MainViewModel.folderPath + $"\\{tableScheme.Name}.json";
+            string pathOfTable = MainViewModel.folderPath + $"\\{tableScheme.Name}.csv";
+            File.WriteAllText(pathOfScheme, jsonNewScheme);
+            File.Create(pathOfTable);
         }
     }
 }

@@ -91,8 +91,12 @@
     <Compile Include="Models\Table.cs" />
     <Compile Include="Models\TableData.cs" />
     <Compile Include="Models\TableScheme.cs" />
+    <Compile Include="ViewModels\ViewModelEditTable.cs" />
     <Compile Include="ViewModels\ViewModelNewDB.cs" />
     <Compile Include="ViewModels\ViewModelNewTable.cs" />
+    <Compile Include="WindowEditTable.xaml.cs">
+      <DependentUpon>WindowEditTable.xaml</DependentUpon>
+    </Compile>
     <Compile Include="WindowTable.xaml.cs">
       <DependentUpon>WindowTable.xaml</DependentUpon>
     </Compile>
@@ -111,6 +115,10 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="WindowEditTable.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="WindowTable.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

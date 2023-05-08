@@ -28,6 +28,9 @@ namespace HardLab5
         public int countOfTables;
         public int countOfSchemes;
         public static string folderPath = "";
+        public static DataTable copyDataTable;
+        public static string tableName;
+        public static TableScheme selectedScheme;
 
         private DataTable _dataTable;
         public DataTable DataTable
@@ -86,9 +89,9 @@ namespace HardLab5
                                 treeViewItem.Selected += TableSelected;
                                 treeViewItem.Unselected += TableUnselected;
 
-                                foreach(Column column in table.Scheme.Columns)
-                                {
-                                    treeViewItem.Items.Add(column.Name + " - " + column.Type);
+                                foreach (Column column in table.Scheme.Columns)
+                                { 
+                                    treeViewItem.Items.Add(column.Name + " - " + column.Type + " - isPrimary: " + column.IsPrimary);
                                 }
                                 ((MainWindow)System.Windows.Application.Current.MainWindow).folderTree.Items.Add(treeViewItem);
                             }
@@ -128,12 +131,13 @@ namespace HardLab5
         public void TableSelected(object sender, RoutedEventArgs e)
         {
             ((MainWindow)System.Windows.Application.Current.MainWindow).DataGrid.Columns.Clear();
-            string tableName = ((TreeViewItem)sender).Header.ToString().Replace(".csv", "");
+            tableName = ((TreeViewItem)sender).Header.ToString().Replace(".csv", "");
             DataTable dataTable = new DataTable();
             foreach (var keyTable in keyTables)
             {
                 if (keyTable.Key.Name == tableName)
                 {
+                    selectedScheme = keyTable.Key;
                     foreach (Column column in keyTable.Key.Columns)
                     {
                         dataTable.Columns.Add(column.Name);
@@ -152,6 +156,7 @@ namespace HardLab5
                 }
             }
             DataTable = dataTable;
+            copyDataTable = dataTable;
         }
 
         private void TableUnselected(object sender, RoutedEventArgs e)
@@ -198,6 +203,23 @@ namespace HardLab5
             }
         });
 
+        public static WindowEditTable wind2;
+        public ICommand EditTable => new DelegateCommand(param =>
+        {
+            if (DataTable != null)
+            {
+                //if (wind == null)
+                //{
+                wind2 = new WindowEditTable();
+                wind2.ShowDialog();
+                //}
+                //else wind1.Activate();
+            }
+            else
+            {
+                System.Windows.MessageBox.Show("Сначала выберите таблицу");
+            }
+        });
 
     }
 }

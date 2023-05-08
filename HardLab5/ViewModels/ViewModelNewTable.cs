@@ -25,7 +25,6 @@ namespace HardLab5
         private string _text;
        // private bool _isChecked;
         public ObservableCollection<ViewModelNewTable> Items { get; } = new ObservableCollection<ViewModelNewTable>();
-        Dictionary<string, string> ColumnsOfNewTable = new Dictionary<string, string>();
 
         public string Text
         {
@@ -61,6 +60,17 @@ namespace HardLab5
             }
         }
 
+        private bool _primary;
+        public bool Primary
+        {
+            get { return _primary; }
+            set
+            {
+                _primary = value;
+                OnPropertyChanged();
+            }
+        }
+
         public ICommand CreateColumns => new DelegateCommand(param =>
         {
             Items.Add(new ViewModelNewTable());
@@ -69,18 +79,24 @@ namespace HardLab5
 
         public ICommand CreateTable => new DelegateCommand(param =>
         {
+            if(Message == null || Items == null)
+            {
+                MessageBox.Show("Данные не заполнены до конца");
+                return;
+            }
             string name = Message;
             List<Column> columns = new List<Column>();
             foreach (var item in Items)
             {
                 Column column = new Column();
-                if(item.Text == null || item.Type == null || name == null)
+                if(item.Text == null || item.Type == null)
                 {
                     MessageBox.Show("Данные не заполнены до конца");
                     return;
                 }
                 column.Name = item.Text;
                 column.Type = item.Type;
+                column.IsPrimary = item.Primary;
                 columns.Add(column);
             }
             //TableScheme.CreateFile(columns, name, MainViewModel.folderPath);
@@ -91,11 +107,12 @@ namespace HardLab5
                 Name = name,
                 Columns = columns
             };
-            string jsonNewScheme = JsonSerializer.Serialize<TableScheme>(tableScheme);
-            string pathOfScheme = MainViewModel.folderPath + $"\\{name}.json";
-            string pathOfTable = MainViewModel.folderPath + $"\\{name}.csv";
-            File.WriteAllText(pathOfScheme, jsonNewScheme);
-            File.Create(pathOfTable);
+            TableScheme.SafeNewData(tableScheme);
+            //string jsonNewScheme = JsonSerializer.Serialize<TableScheme>(tableScheme);
+            //string pathOfScheme = MainViewModel.folderPath + $"\\{name}.json";
+            //string pathOfTable = MainViewModel.folderPath + $"\\{name}.csv";
+            //File.WriteAllText(pathOfScheme, jsonNewScheme);
+            //File.Create(pathOfTable);
 
             System.Windows.MessageBox.Show("Успешно!");
             //CloseWindow(param);
