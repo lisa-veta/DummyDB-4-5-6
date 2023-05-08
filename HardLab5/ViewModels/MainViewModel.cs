@@ -24,7 +24,7 @@ namespace HardLab5
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
         }
 
-        Dictionary<TableScheme, Table> keyTables = new Dictionary<TableScheme, Table>();
+        public static Dictionary<TableScheme, Table> keyTables = new Dictionary<TableScheme, Table>();
         public int countOfTables;
         public int countOfSchemes;
         public static string folderPath = "";
@@ -48,7 +48,7 @@ namespace HardLab5
             FolderBrowserDialog openFolderDialog = new FolderBrowserDialog();
             folderPath = "";
 
-            if (openFolderDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            if (openFolderDialog.ShowDialog() == DialogResult.OK)
             {
                 folderPath = openFolderDialog.SelectedPath;
             }
@@ -82,7 +82,7 @@ namespace HardLab5
                         {
                             try
                             {
-                                Table table = TableData.GetInfoFromTable(fileScheme, fileTable);
+                                Table table = TableData.GetInfoFromTable(tableScheme, fileTable);
                                 keyTables.Add(tableScheme, table);
                                 TreeViewItem treeViewItem = new TreeViewItem();
                                 treeViewItem.Header = fileTable.Split('\\')[(fileTable.Split('\\').Length - 1)];

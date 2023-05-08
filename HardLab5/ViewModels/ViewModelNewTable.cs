@@ -22,10 +22,11 @@ namespace HardLab5
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
         }
 
-        private string _text;
+        
        // private bool _isChecked;
         public ObservableCollection<ViewModelNewTable> Items { get; } = new ObservableCollection<ViewModelNewTable>();
 
+        private string _text;
         public string Text
         {
             get { return _text; }

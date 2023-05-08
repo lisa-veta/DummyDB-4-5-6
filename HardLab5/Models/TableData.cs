@@ -1,14 +1,16 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace HardLab5
 {
     public class TableData
     {
-        public static Table GetInfoFromTable(string pathScheme, string pathTable)
+        public static Table GetInfoFromTable(TableScheme tableScheme,  string pathTable)
         {
-            TableScheme tableScheme = TableScheme.ReadFile(pathScheme);
+            //TableScheme tableScheme = TableScheme.ReadFile(pathScheme);
             Table table = new Table();
+            table.Rows = new List<Row>();
             table.Scheme = tableScheme;
 
             string[] lines = File.ReadAllLines(pathTable);
@@ -22,8 +24,8 @@ namespace HardLab5
                 }
                 else
                 {
-                    Row row = ReadRow(line, i, pathTable, tableScheme);
-                    table.Rows.Add(row);
+                    //Row row = ReadRow(line, i, pathTable, tableScheme);
+                    table.Rows.Add(ReadRow(line, i, pathTable, table.Scheme));
                 }
             }
             return table;

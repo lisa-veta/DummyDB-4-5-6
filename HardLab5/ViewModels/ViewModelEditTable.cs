@@ -1,16 +1,18 @@
 ﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Data;
 using System.Data.Common;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace HardLab5
 {
-    class ViewModelEditTable : MainViewModel
+    class ViewModelEditTable : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -19,8 +21,9 @@ namespace HardLab5
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
         }
 
+        public ObservableCollection<ViewModelEditTable> Items { get; } = new ObservableCollection<ViewModelEditTable>();
         private List<string> _names;
-        public List<string> listOfColumns 
+        public List<string> listOfColumns
         {
             get { return _names; }
             set
@@ -74,8 +77,40 @@ namespace HardLab5
             }
         }
 
+        private string _text;
+        public string Text
+        {
+            get { return _text; }
+            set
+            {
+                //if (value == _text) return;
+                _text = value;
+                OnPropertyChanged();
+            }
+        }
+        private string _type;
+        public string Type
+        {
+            get { return _type; }
+            set
+            {
+                _type = value;
+                OnPropertyChanged();
+            }
+        }
 
-        public ViewModelEditTable() 
+        private bool _primary;
+        public bool Primary
+        {
+            get { return _primary; }
+            set
+            {
+                _primary = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public ViewModelEditTable()
         {
             DataNewTable = MainViewModel.copyDataTable;
             Message = MainViewModel.tableName;
@@ -87,10 +122,16 @@ namespace HardLab5
             listOfColumns = names;
         }
 
-       
+
+        public ICommand CreateColumn => new DelegateCommand(param =>
+        {
+            Items.Add(new ViewModelEditTable());
+
+        });
+
         public ICommand EditTable => new DelegateCommand(param =>
         {
-            if(tableName != Message && Message != null)
+            if (MainViewModel.tableName != Message && Message != null)
             {
                 //File.Move(MainViewModel.folderPath + $"\\{MainViewModel.selectedScheme.Name}.json", MainViewModel.folderPath + $"\\{Message}.json");
                 //File.Move(MainViewModel.folderPath + $"\\{MainViewModel.selectedScheme.Name}.csv", MainViewModel.folderPath + $"\\{Message}.csv");
@@ -98,19 +139,66 @@ namespace HardLab5
             }
             if (SelectedColumn != null && NewColumnName != null)
             {
-                foreach(Column column in selectedScheme.Columns)
+                foreach (Column column in MainViewModel.selectedScheme.Columns)
                 {
-                    if(column.Name == SelectedColumn)
+                    if (column.Name == SelectedColumn)
                     {
                         column.Name = NewColumnName;
                     }
                 }
             }
-            string jsonNewScheme = JsonSerializer.Serialize<TableScheme>(selectedScheme);
-            File.WriteAllText(folderPath + $"\\{selectedScheme.Name}.json", jsonNewScheme);
-            GetEquals(folderPath);
-            DataNewTable = copyDataTable;
+            foreach (var item  in Items) 
+            {
+                Column column = new Column();
+                if (item.Text == null || item.Type == null)
+                {
+                    MessageBox.Show("Данные не заполнены до конца");
+                    return;
+                }
+                column.Name = item.Text;
+                column.Type = item.Type;
+                column.IsPrimary = item.Primary;
+                MainViewModel.selectedScheme.Columns.Add(column);
+            }
+
+            string jsonNewScheme = JsonSerializer.Serialize(MainViewModel.selectedScheme);
+            File.WriteAllText(MainViewModel.folderPath + $"\\{MainViewModel.selectedScheme.Name}.json", jsonNewScheme);
+            UpdateTable();
         });
 
+        public void UpdateTable()
+        {
+            DataNewTable.Clear();
+            DataTable dataTable = new DataTable();
+            foreach (var keyTable in MainViewModel.keyTables)
+            {
+                if (keyTable.Key.Name == MainViewModel.tableName)
+                {
+                    MainViewModel.selectedScheme = keyTable.Key;
+                    foreach (Column column in keyTable.Key.Columns)
+                    {
+                        dataTable.Columns.Add(column.Name);
+                    }
+
+                    for (int i = 0; i < keyTable.Value.Rows.Count; i++)
+                    {
+                        DataRow newRow = dataTable.NewRow();
+                        foreach (var rows in keyTable.Value.Rows[i].Data)
+                        {
+                            newRow[rows.Key.Name] = rows.Value;
+                        }
+                        dataTable.Rows.Add(newRow);
+                    }
+                    break;
+                }
+            }
+            DataNewTable = dataTable;
+        }
+
+
+        public ICommand AddTable => new DelegateCommand(param =>
+        {
+
+        });
     }
 }

@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:HardLab5" d:DataContext="{d:DesignInstance Type=local:ViewModelEditTable}"
+        xmlns:local="clr-namespace:HardLab5" xmlns:sys="clr-namespace:System;assembly=mscorlib" d:DataContext="{d:DesignInstance Type=local:ViewModelEditTable}"
         mc:Ignorable="d"
         Title="WindowEditTable" Height="500" Width="900">
     <Grid>
@@ -44,5 +44,37 @@
                 <TextBlock Text="Сохранить изменения" TextWrapping="Wrap" TextAlignment="Center"/>
             </Button.Content>
         </Button>
+        <Button x:Name="Add" Command="{Binding  CreateColumn}" Grid.Column="3" Grid.Row="8" Background="DarkSeaGreen">
+            <Button.Content>
+                <TextBlock Text="Добавить столбец" TextWrapping="Wrap" TextAlignment="Center"/>
+            </Button.Content>
+        </Button>
+        <ScrollViewer Grid.Row="6"  Grid.Column="1" Grid.ColumnSpan="2" >
+            <ItemsControl ItemsSource="{Binding Items}" >
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Vertical">
+                            <TextBlock></TextBlock>
+                            <TextBlock>Название:</TextBlock>
+                            <TextBox Text="{Binding Text}" Grid.ColumnSpan="2"/>
+                            <TextBlock>Тип:</TextBlock>
+                            <ComboBox  Grid.Column="2" Grid.ColumnSpan="2" SelectedItem ="{Binding Type}">
+                                <sys:String>string</sys:String>
+                                <sys:String>int</sys:String>
+                                <sys:String>uint</sys:String>
+                                <sys:String>float</sys:String>
+                                <sys:String>double</sys:String>
+                                <sys:String>datetime</sys:String>
+                            </ComboBox>
+                            <TextBlock>Первичный ключ:</TextBlock>
+                            <ComboBox  Grid.Column="2" Grid.ColumnSpan="2" SelectedItem ="{Binding Primary}">
+                                <sys:Boolean>true</sys:Boolean>
+                                <sys:Boolean>false</sys:Boolean>
+                            </ComboBox>
+                        </StackPanel>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
     </Grid>
 </Window>
