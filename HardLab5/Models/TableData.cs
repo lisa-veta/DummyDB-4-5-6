@@ -25,7 +25,7 @@ namespace HardLab5
                 else
                 {
                     //Row row = ReadRow(line, i, pathTable, tableScheme);
-                    table.Rows.Add(ReadRow(line, i, pathTable, table.Scheme));
+                    table.Rows.Add(ReadRow(line, i, pathTable, tableScheme));
                 }
             }
             return table;
