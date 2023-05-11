@@ -69,7 +69,7 @@
                         <StackPanel Orientation="Vertical">
                             <TextBlock></TextBlock>
                             <TextBlock>Название:</TextBlock>
-                            <TextBox Text="{Binding Text}" Grid.ColumnSpan="2"/>
+                            <TextBox Text="{Binding ColumnName}" Grid.ColumnSpan="2"/>
                             <TextBlock>Тип:</TextBlock>
                             <ComboBox  Grid.Column="2" Grid.ColumnSpan="2" SelectedItem ="{Binding Type}">
                                 <sys:String>string</sys:String>

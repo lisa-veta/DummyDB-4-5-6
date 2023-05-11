@@ -45,19 +45,7 @@ namespace HardLab5
 
         public ICommand OpenDataFile => new DelegateCommand(param =>
         {
-            //((MainWindow)System.Windows.Application.Current.MainWindow).folderTree.Items.Clear();
-            //keyTables.Clear();
-            //List<TableScheme> schemes = new List<TableScheme>();
-            //FolderBrowserDialog openFolderDialog = new FolderBrowserDialog();
-            //folderPath = "";
-
-            //if (openFolderDialog.ShowDialog() == DialogResult.OK)
-            //{
-            //    folderPath = openFolderDialog.SelectedPath;
-            //}
-            //string[] splits = folderPath.Split('\\');
-            //string folderName = splits[splits.Length - 1];
-            //((MainWindow)System.Windows.Application.Current.MainWindow).folderTree.Header = folderName;
+            keyTables.Clear();
             FolderBrowserDialog openFolderDialog = new FolderBrowserDialog();
             folderPath = "";
 
@@ -82,53 +70,6 @@ namespace HardLab5
 
         public void GetEquals(string folderPath)
         {
-            //((MainWindow)System.Windows.Application.Current.MainWindow).folderTree.Items.Clear();
-            //List<TableScheme> schemes = new List<TableScheme>();
-            //foreach (string file in Directory.EnumerateFiles(folderPath))
-            //{
-            //    if (file.Contains(".json"))
-            //    {
-            //        string pathTable = file.Replace("json", "csv");
-            //        TableScheme scheme = TableScheme.ReadFile(file);
-            //        schemes.Add(scheme);
-            //    }
-            //}
-            //foreach (string file in Directory.EnumerateFiles(folderPath))
-            //{
-            //    if (file.Contains(".csv"))
-            //    {
-            //        Table table = new Table();
-            //        foreach (TableScheme scheme in schemes)
-            //        {
-            //            try
-            //            {
-            //                table = TableData.GetInfoFromTable(scheme, file);
-            //                keyTables.Add(scheme, table);
-            //                TreeViewItem treeItem = new TreeViewItem();
-            //                string[] line = file.Split('\\');
-            //                treeItem.Header = (line[line.Length - 1]).Substring(0, line[line.Length - 1].Length - 4);
-            //                treeItem.Selected += TableSelected;
-
-
-            //                foreach (Column key in scheme.Columns)
-            //                {
-            //                    treeItem.Items.Add(key.Name + " - " + key.Type);
-            //                }
-            //                ((MainWindow)System.Windows.Application.Current.MainWindow).folderTree.Items.Add(treeItem);
-            //                break;
-            //            }
-            //            catch (Exception ex) { continue; }
-
-            //        }
-            //        //if (table.Rows == null)
-            //        //{
-            //        //    //string[] line = file.Split("\\");
-            //        //    //Message = $"Не найдена схема для таблицы {line[line.Length - 1].Replace(".csv", "")} или в таблице некорректные данные";
-            //        //}
-
-            //    }
-            //}
-            //keyTables.Clear();
             ((MainWindow)System.Windows.Application.Current.MainWindow).folderTree.Items.Clear();
             foreach (string fileScheme in Directory.EnumerateFiles(folderPath))
             {

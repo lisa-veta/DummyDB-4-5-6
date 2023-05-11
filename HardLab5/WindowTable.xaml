@@ -5,9 +5,10 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:HardLab5" xmlns:sys="clr-namespace:System;assembly=mscorlib" d:DataContext="{d:DesignInstance Type=local:ViewModelNewTable}"
         mc:Ignorable="d"
-        Title="WindowTable" Height="360" Width="300">
+        Title="WindowTable" Height="360" Width="330">
     <Grid  Background="Lavender">
         <Grid.RowDefinitions>
+            <RowDefinition Height="5*"/>
             <RowDefinition Height="5*"/>
             <RowDefinition Height="10*"/>
             <RowDefinition Height="10*"/>
@@ -29,10 +30,11 @@
             <ColumnDefinition Width="10*"/>
         </Grid.ColumnDefinitions>
 
-        <TextBlock Grid.ColumnSpan="3" VerticalAlignment="Center" HorizontalAlignment="Center" >Название таблицы:</TextBlock>
-        <TextBox Text="{Binding  Message}" x:Name="NameTable" Grid.Column="3" Grid.ColumnSpan="3" TextWrapping="Wrap"  TextAlignment="Center"></TextBox>
-        <Button x:Name="addColumns" Command="{Binding  CreateColumns}" Grid.Column="1" Grid.Row="7" Content="Добавить столбец" Grid.ColumnSpan="4"  Background="DarkSeaGreen"/>
-        <ScrollViewer Grid.Row="1"  Grid.Column="1" Grid.ColumnSpan="4"  Grid.RowSpan="6">
+        <TextBlock Grid.Row ="1" Grid.Column="1" Grid.ColumnSpan="2" VerticalAlignment="Center" HorizontalAlignment="Center" >Название таблицы:</TextBlock>
+        <TextBox Text="{Binding  Message}" x:Name="NameTable" Grid.Row ="1" Grid.Column="3" Grid.ColumnSpan="2" TextWrapping="Wrap"  TextAlignment="Center"></TextBox>
+        <Button x:Name="AddColumns" Command="{Binding  CreateColumns}" Grid.Column="1" Grid.Row="8" Content="Добавить столбец" Grid.ColumnSpan="2"  Background="DarkSeaGreen"/>
+        <Button x:Name="RemoveColumns" Command="{Binding  RemoveColumn}" Grid.Column="3" Grid.Row="8" Content="Удалить столбец" Grid.ColumnSpan="2"  Background="DarkSeaGreen"/>
+        <ScrollViewer Grid.Row="2"  Grid.Column="1" Grid.ColumnSpan="4"  Grid.RowSpan="6">
             <ItemsControl ItemsSource="{Binding Items}" >
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
@@ -59,7 +61,7 @@
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
         </ScrollViewer>
-        <Button x:Name="CreateTable" Command="{Binding  CreateTable}" Grid.Column="1" Grid.Row="9" Content="Создать таблицу" Grid.ColumnSpan="4"  Background="DarkSeaGreen"/>
+        <Button x:Name="CreateTable" Command="{Binding  CreateTable}" Grid.Column="1" Grid.Row="10" Content="Создать таблицу" Grid.ColumnSpan="4"  Background="DarkSeaGreen"/>
         
     </Grid>
 </Window>

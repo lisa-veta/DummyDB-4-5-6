@@ -7,6 +7,7 @@ using System.Data.Common;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Runtime.Remoting.Messaging;
 using System.Text;
 using System.Text.Json;
 using System.Windows;
@@ -102,14 +103,14 @@ namespace HardLab5
             }
         }
 
-        private string _text;
-        public string Text
+        private string _columnName;
+        public string ColumnName
         {
-            get { return _text; }
+            get { return _columnName; }
             set
             {
                 //if (value == _text) return;
-                _text = value;
+                _columnName = value;
                 OnPropertyChanged();
             }
         }
@@ -145,6 +146,7 @@ namespace HardLab5
                 names.Add(column.ToString());
             }
             listOfColumns = names;
+            listOfColumns.Add("нет выбора");
         }
 
         public ICommand CreateColumn => new DelegateCommand(param =>
@@ -155,54 +157,224 @@ namespace HardLab5
 
         public ICommand RemoveColumn => new DelegateCommand(param =>
         {
-            Items.Remove(new ViewModelEditTable());
+            int count = 0;
+            foreach(var item in Items)
+            {
+                count += 1;
+                if (count == Items.Count)
+                {
+                    Items.Remove(item);
+                    break;
+                }
+            }
         });
 
         public ICommand EditTable => new DelegateCommand(param =>
         {
-            if (MainViewModel.tableName != Message && Message != null)
+            if (MainViewModel.tableName != Message && Message != null && Message != "")
             {
-                File.Move(MainViewModel.folderPath + $"\\{MainViewModel.selectedScheme.Name}.json", MainViewModel.folderPath + $"\\{Message}.json");
-                File.Move(MainViewModel.folderPath + $"\\{MainViewModel.selectedScheme.Name}.csv", MainViewModel.folderPath + $"\\{Message}.csv");
-                MainViewModel.selectedScheme.Name = Message;
+                CreateNewFiles();
             }
-            if (SelectedColumn != null && NewColumnName != null)
+            if (SelectedColumn != null && SelectedColumn != "" && NewColumnName != null && NewColumnName != "" && SelectedColumn != "нет выбора")
             {
-                foreach (Column column in MainViewModel.selectedScheme.Columns)
+                RemoveColumnName();
+                SelectedColumn = null;
+            }
+            if(Items != null)
+            {
+                AddNewColumn();
+            }
+            if (SelectedColumnDelete != null && SelectedColumnDelete != "нет выбора")
+            {
+                DialogResult dialogResult = System.Windows.Forms.MessageBox.Show("Вы уверены, что хотите безвозвратно удалить столбец?", "Подтверждение действий", MessageBoxButtons.YesNo);
+                if (dialogResult == DialogResult.Yes)
                 {
-                    if (column.Name == SelectedColumn)
-                    {
-                        column.Name = NewColumnName;
-                    }
+                    DeleteColumn();
                 }
-            }
-            
-            foreach (var item  in Items) 
-            {
-                Column column = new Column();
-                if (item.Text == null || item.Type == null)
+                else if (dialogResult == DialogResult.No)
                 {
-                    System.Windows.MessageBox.Show("Данные не заполнены до конца");
                     return;
                 }
-                column.Name = item.Text;
-                column.Type = item.Type;
-                column.IsPrimary = item.Primary;
-                MainViewModel.selectedScheme.Columns.Add(column);
-                listOfColumns.Add(column.Name);
+                
             }
-            
-            if (SelectedColumnDelete != null)
-            {
-                DeleteColumn();
-            }
+
             string jsonNewScheme = JsonSerializer.Serialize(MainViewModel.selectedScheme);
             File.WriteAllText(MainViewModel.folderPath + $"\\{MainViewModel.selectedScheme.Name}.json", jsonNewScheme);
             UpdateTable();
         });
 
+
+        public void CreateNewFiles()
+        {
+            File.Move(MainViewModel.folderPath + $"\\{MainViewModel.selectedScheme.Name}.json", MainViewModel.folderPath + $"\\{Message}.json");
+            File.Move(MainViewModel.folderPath + $"\\{MainViewModel.selectedScheme.Name}.csv", MainViewModel.folderPath + $"\\{Message}.csv");
+            MainViewModel.selectedScheme.Name = Message;
+        }
+
+        public void RemoveColumnName()
+        {
+            if (CheckEqualsNames("EditColumnName"))
+            {
+                System.Windows.MessageBox.Show("Попытка добавления столбца с уже существующим именем");
+                return;
+            }
+            foreach (Column column in MainViewModel.selectedScheme.Columns)
+            {
+                if (column.Name == SelectedColumn)
+                {
+                    column.Name = NewColumnName;
+                }
+            }
+        }
+
+        public void AddNewColumn()
+        {
+            int countOfColumn = 0;
+            foreach (Column column in MainViewModel.selectedScheme.Columns)
+            {
+                countOfColumn += 1;
+            }
+
+            foreach (var item in Items)
+            {
+                Column column = new Column();
+                if (item.ColumnName == null || item.ColumnName == "" || item.Type == null)
+                {
+                    System.Windows.MessageBox.Show("Данные не заполнены до конца");
+                    return;
+                }
+                if(CheckEqualsNames("CreateNewColumn"))
+                {
+                    System.Windows.MessageBox.Show("Попытка добавления столбца с уже существующим именем");
+                    return;
+                }
+                column.Name = item.ColumnName;
+                column.Type = item.Type;
+                column.IsPrimary = item.Primary;
+                MainViewModel.selectedScheme.Columns.Add(column);
+                listOfColumns.Add(column.Name);
+                countOfColumn += 1;
+                AddColumnInTable(column, countOfColumn);
+
+            }
+        }
+        public bool CheckEqualsNames(string location)
+        {
+            if(location == "EditColumnName")
+            {
+                foreach (Column column in MainViewModel.selectedScheme.Columns)
+                {
+                    if (column.Name == NewColumnName)
+                    {
+                        return true;
+                    }
+                }
+            }
+            else if(location == "CreateNewColumn")
+            {
+                foreach (var item in Items)
+                {
+                    foreach (Column column in MainViewModel.selectedScheme.Columns)
+                    {
+                        if (column.Name == item.ColumnName)
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
+            return false;
+        }
+
+        public void AddColumnInTable(Column column, int countOfColumn)
+        {
+            foreach (var row in MainViewModel.keyTables[MainViewModel.selectedScheme].Rows)
+            {
+                switch (column.Type)
+                {
+                    case "uint":
+                        {
+                            row.Data.Add(column, 0);
+                            break;
+                        }
+                    case "int":
+                        {
+                            row.Data.Add(column, 0);
+                            break;
+                        }
+                    case "float":
+                        {
+                            row.Data.Add(column, 0);
+                            break;
+                        }
+                    case "double":
+                        {
+                            row.Data.Add(column, 0);
+                            break;
+                        }
+                    case "datetime":
+                        {
+                            row.Data.Add(column, DateTime.MinValue);
+                            break;
+                        }
+                    case "string":
+                        {
+                            row.Data.Add(column, null);
+                            break;
+                        }
+                }
+            }
+            string pathTable = MainViewModel.folderPath + $"\\{MainViewModel.selectedScheme.Name}.csv";
+            RewriteCSV(pathTable, countOfColumn);
+        }
+
+        public void DeleteColumn()
+        {
+            int countOfColumn = 0;
+            foreach (Column column in MainViewModel.selectedScheme.Columns)
+            {
+                if (column.Name == SelectedColumnDelete)
+                {
+                    MainViewModel.selectedScheme.Columns.Remove(column);
+                    listOfColumns.Remove(column.Name);
+                    foreach (var row in MainViewModel.keyTables[MainViewModel.selectedScheme].Rows)
+                    {
+                        row.Data.Remove(column);
+                    }
+                    string pathTable = MainViewModel.folderPath + $"\\{MainViewModel.selectedScheme.Name}.csv";
+                    RewriteCSV(pathTable, countOfColumn);
+                    break;
+                }
+                countOfColumn += 1;
+            }
+        }
+
+        public void RewriteCSV(string pathTable, int numberOfColumn)
+        {
+            int count = 1;
+            StringBuilder newFile = new StringBuilder();
+            foreach (var row in MainViewModel.keyTables[MainViewModel.selectedScheme].Rows)
+            {
+                foreach (Column column in row.Data.Keys)
+                {
+                    if (count == numberOfColumn)
+                    {
+                        newFile.Append($"{row.Data[column]}" + "\n");
+                        break;
+                    }
+                    newFile.Append($"{row.Data[column]}" + ";");
+                    count += 1;
+                }
+                count = 1;
+            }
+            Message2 = newFile.ToString();
+            File.WriteAllText(pathTable, newFile.ToString());
+
+        }
+
         public void UpdateTable()
         {
+            Items.Clear();
             NewColumnName = null;
             DataNewTable.Clear();
             DataTable dataTable = new DataTable();
@@ -230,68 +402,5 @@ namespace HardLab5
             }
             DataNewTable = dataTable;
         }
-
-        public void DeleteColumn()
-        {
-            int count = 0;
-            foreach (Column column in MainViewModel.selectedScheme.Columns)
-            {
-                if (column.Name == SelectedColumnDelete)
-                {
-                    MainViewModel.selectedScheme.Columns.Remove(column);
-                    listOfColumns.Remove(column.Name);
-                    foreach(var row in MainViewModel.keyTables[MainViewModel.selectedScheme].Rows)
-                    {
-                        row.Data.Remove(column);
-                    }
-                    string pathTable = MainViewModel.folderPath + $"\\{MainViewModel.selectedScheme.Name}.csv";
-                    RewriteCSV(pathTable, count);
-                    break;
-                }
-                count += 1;
-            }
-        }
-
-        public void RewriteCSV(string pathTable, int numberOfColumn)
-        {
-            int count = 1;
-            StringBuilder newFile = new StringBuilder();
-            foreach (var row in MainViewModel.keyTables[MainViewModel.selectedScheme].Rows)
-            {
-                foreach (Column column in row.Data.Keys)
-                {
-                    if (count == numberOfColumn) 
-                    {
-                        newFile.Append(row.Data[column].ToString() + "\n");
-                        break;
-                    }
-                    newFile.Append(row.Data[column].ToString() + ";");
-                    count += 1;
-                }
-                count = 1;
-            }
-            Message2 = newFile.ToString();
-            File.WriteAllText(pathTable, newFile.ToString());
-            //System.Text.Encoding.Default
-            // Encoding.GetEncoding(1251)
-            //StringBuilder newFile = new StringBuilder();
-            //string[] lines = File.ReadAllLines(pathTable);
-            //foreach (string line in lines)
-            //{
-            //    List<string> columns = (line.Split(';')).ToList();
-            //    columns.RemoveAt(numberOfColumn);
-            //    string newLine = String.Join(";", columns);
-            //    if (newLine[newLine.Length - 1] == ';')
-            //    {
-            //        newLine.Remove(newLine.Length - 1);
-            //    }
-            //    newFile.AppendLine(String.Join(";", columns));
-            //}
-            //File.WriteAllText(pathTable, newFile.ToString());
-        }
-        public ICommand AddTable => new DelegateCommand(param =>
-        {
-
-        });
     }
 }

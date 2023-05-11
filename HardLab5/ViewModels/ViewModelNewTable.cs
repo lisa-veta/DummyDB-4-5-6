@@ -1,9 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Data.Common;
 using System.IO;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.Remoting.Messaging;
+using System.Text;
 using System.Text.Json;
 using System.Windows.Forms;
 using System.Windows.Input;
@@ -77,10 +81,23 @@ namespace HardLab5
             Items.Add(new ViewModelNewTable());
 
         });
+        public ICommand RemoveColumn => new DelegateCommand(param =>
+        {
+            int count = 0;
+            foreach (var item in Items)
+            {
+                count += 1;
+                if (count == Items.Count)
+                {
+                    Items.Remove(item);
+                    break;
+                }
+            }
+        });
 
         public ICommand CreateTable => new DelegateCommand(param =>
         {
-            if(Message == null || Items == null)
+            if (Message == null || Message == "" || Items == null)
             {
                 MessageBox.Show("Данные не заполнены до конца");
                 return;
@@ -90,7 +107,7 @@ namespace HardLab5
             foreach (var item in Items)
             {
                 Column column = new Column();
-                if(item.Text == null || item.Type == null)
+                if(item.Text == null || item.Text == "" || item.Type == null)
                 {
                     MessageBox.Show("Данные не заполнены до конца");
                     return;
@@ -99,25 +116,94 @@ namespace HardLab5
                 column.Type = item.Type;
                 column.IsPrimary = item.Primary;
                 columns.Add(column);
+                
             }
-            //TableScheme.CreateFile(columns, name, MainViewModel.folderPath);
-            //MainViewModel.GetEquals(MainViewModel.folderPath);
-
-            var tableScheme = new TableScheme
+            TableScheme tableScheme = new TableScheme
             {
                 Name = name,
                 Columns = columns
             };
-            TableScheme.SafeNewData(tableScheme);
-            //string jsonNewScheme = JsonSerializer.Serialize<TableScheme>(tableScheme);
-            //string pathOfScheme = MainViewModel.folderPath + $"\\{name}.json";
-            //string pathOfTable = MainViewModel.folderPath + $"\\{name}.csv";
-            //File.WriteAllText(pathOfScheme, jsonNewScheme);
-            //File.Create(pathOfTable);
+
+            if (CheckEqualsNames(tableScheme))
+            {
+                System.Windows.MessageBox.Show("Найдены столбцы с повторяющимися именами");
+                return;
+            }
+
+            string jsonNewScheme = JsonSerializer.Serialize<TableScheme>(tableScheme);
+            string pathOfScheme = MainViewModel.folderPath + $"\\{tableScheme.Name}.json";
+            File.WriteAllText(pathOfScheme, jsonNewScheme);
+
+            string pathTable = MainViewModel.folderPath + $"\\{tableScheme.Name}.csv";
+            string newFile = AddColumnInTable(columns);
+            File.WriteAllText(pathTable, newFile.ToString());
 
             System.Windows.MessageBox.Show("Успешно!");
-            //CloseWindow(param);
         });
+
+        public string AddColumnInTable(List<Column> columns)
+        {
+            StringBuilder newFile = new StringBuilder();
+            int count = 0;
+            foreach (var column in columns)
+            {
+                count += 1;
+                switch (column.Type)
+                {
+                    case "uint":
+                        {
+                            newFile.Append("0");
+                            break;
+                        }
+                    case "int":
+                        {
+                            newFile.Append("0");
+                            break;
+                        }
+                    case "float":
+                        {
+                            newFile.Append("0");
+                            break;
+                        }
+                    case "double":
+                        {
+                            newFile.Append("0");
+                            break;
+                        }
+                    case "datetime":
+                        {
+                            newFile.Append($"{DateTime.MinValue}");
+                            break;
+                        }
+                    case "string":
+                        {
+                            newFile.Append($"{null}");
+                            break;
+                        }
+                }
+                if(count != columns.Count())
+                {
+                    newFile.Append(";");
+                }
+            }
+            return newFile.ToString();
+        }
+
+        public bool CheckEqualsNames(TableScheme tableScheme)
+        {
+            for(int i = 0; i < Items.Count()-1; i++)
+            {
+                for(int j = i+1; j < Items.Count(); j++)
+                {
+                    if (Items[i].Text == Items[j].Text)
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
         //private void CloseWindow(object obj)
         //{
         //    Close(obj, true);
