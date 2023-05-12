@@ -40,15 +40,15 @@
         </Grid.ColumnDefinitions>
 
         <TextBlock Grid.Column="1" Grid.Row ="1" FontSize="14" Text="Таблица"  TextWrapping="Wrap" VerticalAlignment="Center" TextAlignment="Center" Background="DarkSeaGreen"></TextBlock>
-        <TextBox Grid.Column="2" Grid.Row ="1" Grid.ColumnSpan="2" FontSize="14" Text="{Binding Message}" TextWrapping="Wrap" VerticalAlignment="Center" TextAlignment="Center" ></TextBox>
-       
-        <DataGrid Name="DataGrid"  Grid.Column="1"  Grid.Row="3"  AutoGenerateColumns="True" ItemsSource="{Binding DataNewTable}"
-                RowBackground="LightYellow" AlternatingRowBackground="LightBlue" Grid.ColumnSpan="9"/>
+        <TextBox Grid.Column="2" Grid.Row ="1" Grid.ColumnSpan="2" FontSize="14" Text="{Binding TableName}" TextWrapping="Wrap" VerticalAlignment="Center" TextAlignment="Center" ></TextBox>
+
+        <DataGrid Name="DataGrid"  Grid.Column="1"  Grid.Row="3"  AutoGenerateColumns="True" ItemsSource="{Binding DataNewTable}" 
+                RowBackground="LightYellow" AlternatingRowBackground="LightBlue" Grid.ColumnSpan="9" CanUserAddRows="False"/>
 
         <TextBlock Grid.Column="1" Grid.Row ="4"  Grid.ColumnSpan="4" FontSize="17" Text="Редактирование таблицы" TextWrapping="Wrap" TextAlignment="Center" VerticalAlignment="Center" Background="DarkSeaGreen"></TextBlock>
 
         <TextBlock Grid.Column="1" Grid.Row ="5" Grid.ColumnSpan="2" FontSize="14" Text="Переименовать столбец" TextWrapping="Wrap" VerticalAlignment="Center" TextAlignment="Center"></TextBlock>
-        <ComboBox  Grid.Column="3" Grid.Row ="5" ItemsSource="{Binding listOfColumns}" SelectedItem ="{Binding SelectedColumn}"></ComboBox>
+        <ComboBox  Grid.Column="3" Grid.Row ="5" ItemsSource="{Binding ListOfColumns}" SelectedItem ="{Binding SelectedColumn}"></ComboBox>
         <TextBox Grid.Column="4" Grid.Row ="5" Text="{Binding NewColumnName}" TextWrapping="Wrap"  TextAlignment="Center"></TextBox>
 
         <TextBlock Grid.Column="1" Grid.Row ="7" Grid.ColumnSpan="2" Text="Добавить столбец" FontSize="14" TextWrapping="Wrap" VerticalAlignment="Center" TextAlignment="Center"></TextBlock>
@@ -91,9 +91,9 @@
         </ScrollViewer>
 
         <TextBlock Grid.Column="1" Grid.Row ="12" Grid.ColumnSpan="2" FontSize="14" Text="Удалить столбец" TextWrapping="Wrap" VerticalAlignment="Center" TextAlignment="Center"></TextBlock>
-        <ComboBox  Grid.Column="3" Grid.ColumnSpan="2" Grid.Row ="12" ItemsSource="{Binding listOfColumns}" SelectedItem ="{Binding SelectedColumnDelete}"></ComboBox>
+        <ComboBox  Grid.Column="3" Grid.ColumnSpan="2" Grid.Row ="12" ItemsSource="{Binding ListOfColumns}" SelectedItem ="{Binding SelectedColumnDelete}"></ComboBox>
 
-        <Button x:Name="Edit" Command="{Binding  EditTable}" Grid.Column="4" Grid.Row="14" Background="DarkSeaGreen">
+        <Button x:Name="Edit" Command="{Binding  EditTable}" Grid.Column="2" Grid.Row="14" Grid.ColumnSpan="2" Background="DarkSeaGreen">
             <Button.Content>
                 <TextBlock Text="Сохранить изменения" TextWrapping="Wrap" TextAlignment="Center"/>
             </Button.Content>
@@ -103,7 +103,24 @@
 
 
 
-        <TextBox Grid.Column="6" Grid.Row ="5" Grid.ColumnSpan="4" Grid.RowSpan="7" FontSize="14" Text="{Binding Message2}"  ></TextBox>
+        <ScrollViewer Grid.Row="7"  Grid.Column="6" Grid.ColumnSpan="2" Grid.RowSpan="4">
+            <ItemsControl ItemsSource="{Binding ItemsNewRow}" >
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Vertical">
+                            <TextBlock></TextBlock>
+                            <TextBlock Text="{Binding ListOfColumn}" Grid.Column="6"></TextBlock>
+                            <TextBox Text="{Binding ListSource}" Grid.Column="7"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
 
+        <Button x:Name="AddRow" Command="{Binding  AddRow}" Grid.Column="4" Grid.ColumnSpan="3" Grid.Row="1"  Background="DarkSeaGreen">
+            <Button.Content>
+                <TextBlock FontSize="14" Text="Добавить строку" TextWrapping="Wrap" TextAlignment="Center"/>
+            </Button.Content>
+        </Button>
     </Grid>
 </Window>

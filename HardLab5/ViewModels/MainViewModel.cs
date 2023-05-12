@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Data;
 using System.IO;
@@ -30,7 +31,8 @@ namespace HardLab5
         public static string folderPath = "";
         public static DataTable copyDataTable;
         public static string tableName;
-        public static TableScheme selectedScheme;
+        public  TableScheme selectedScheme;
+        public Table selectedTable;
 
         private DataTable _dataTable;
         public DataTable DataTable
@@ -64,7 +66,6 @@ namespace HardLab5
 
             countOfSchemes = countOfTables = 0;
             GetEquals(folderPath);
-            
         });
 
 
@@ -96,9 +97,8 @@ namespace HardLab5
                                 }
                                 ((MainWindow)System.Windows.Application.Current.MainWindow).folderTree.Items.Add(treeViewItem);
                             }
-                            catch //(Exception ex)
+                            catch
                             {
-                                //((MainWindow)System.Windows.Application.Current.MainWindow).TextBox1.Text = (ex.Message).ToString();
                                 continue;
                             }
                         }
@@ -139,6 +139,7 @@ namespace HardLab5
                 if (keyTable.Key.Name == tableName)
                 {
                     selectedScheme = keyTable.Key;
+                    selectedTable = keyTable.Value;
                     foreach (Column column in keyTable.Key.Columns)
                     {
                         dataTable.Columns.Add(column.Name);
@@ -212,6 +213,20 @@ namespace HardLab5
                 //if (wind == null)
                 //{
                 wind2 = new WindowEditTable();
+                ViewModelEditTable vmEditTable = new ViewModelEditTable();
+                wind2.DataContext = vmEditTable;
+
+                vmEditTable.DataNewTable = copyDataTable;
+                vmEditTable.TableName = tableName;
+                ObservableCollection<string> names = new ObservableCollection<string>();
+                foreach (var column in copyDataTable.Columns)
+                {
+                    names.Add(column.ToString());
+                }
+                vmEditTable.ListOfColumns = names;
+                vmEditTable.ListOfColumns.Add("нет выбора");
+                vmEditTable.selectedScheme = selectedScheme;
+                vmEditTable.selectedTable = selectedTable;
                 wind2.ShowDialog();
                 //}
                 //else wind1.Activate();
