@@ -31,6 +31,7 @@ namespace HardLab5
 
         public ObservableCollection<ViewModelEditTable> Items { get; } = new ObservableCollection<ViewModelEditTable>();
         private ObservableCollection<string> _names;
+
         public ObservableCollection<string> ListOfColumns
         {
             get { return _names; }
@@ -40,6 +41,9 @@ namespace HardLab5
                 OnPropertyChanged();
             }
         }
+
+        public System.Windows.Controls.DataGrid DataGrid { get; set; }
+
 
         public TableScheme selectedScheme;
         public Table selectedTable;
@@ -180,6 +184,27 @@ namespace HardLab5
             }
         });
 
+        public ICommand DeleteRow => new DelegateCommand(param =>
+        {
+            for(int i = 0; i < DataGrid.Columns.Count; i++)
+            {
+                if (DataGrid.Items[i] == DataGrid.SelectedItem)
+                {
+                    DialogResult dialogResult = System.Windows.Forms.MessageBox.Show($"Вы уверены, что хотите безвозвратно удалить {i+1} строку?", "Подтверждение действий", MessageBoxButtons.YesNo); ;
+                    if (dialogResult == DialogResult.Yes)
+                    {
+                        DeleteTableRow(i);
+                        UpdateTable();
+                        return;
+                    }
+                    else if (dialogResult == DialogResult.No)
+                    {
+                        return;
+                    }
+                }
+            }
+        });
+
         public ICommand EditTable => new DelegateCommand(param =>
         {
             if (GetEx())
@@ -190,13 +215,10 @@ namespace HardLab5
             {
                 CreateNewFiles();
             }
-            if (SelectedColumn != null && SelectedColumn != "" && NewColumnName != null && NewColumnName != "" && SelectedColumn != "нет выбора")
+            if(AddNewColumn())
             {
-                RemoveColumnName();
-            }
-            if(Items != null)
-            {
-                AddNewColumn();
+                System.Windows.MessageBox.Show("Данные не заполнены до конца");
+                return;
             }
             if (SelectedColumnDelete != null && SelectedColumnDelete != "нет выбора")
             {
@@ -213,13 +235,18 @@ namespace HardLab5
             }
             string jsonNewScheme = JsonSerializer.Serialize(selectedScheme);
             File.WriteAllText(MainViewModel.folderPath + $"\\{selectedScheme.Name}.json", jsonNewScheme);
+            
+            UpdateTable();
+        });
+
+
+        public ICommand EditRows => new DelegateCommand(param =>
+        {
             if (EditTableData())
             {
                 return;
             }
-            UpdateTable();
         });
-
 
         public bool GetEx()
         {
@@ -260,29 +287,32 @@ namespace HardLab5
             }
         }
 
-        public void AddNewColumn()
+        public bool AddNewColumn()
         {
-            int countOfColumn = 0;
-            foreach (Column column in selectedScheme.Columns)
+            if(Items != null)
             {
-                countOfColumn += 1;
-            }
-            foreach (var item in Items)
-            {
-                Column column = new Column();
-                if (item.ColumnName == null || item.ColumnName == "" || item.Type == null)
+                int countOfColumn = 0;
+                foreach (Column column in selectedScheme.Columns)
                 {
-                    System.Windows.MessageBox.Show("Данные не заполнены до конца");
-                    return;
+                    countOfColumn += 1;
                 }
-                column.Name = item.ColumnName;
-                column.Type = item.Type;
-                column.IsPrimary = item.Primary;
-                selectedScheme.Columns.Add(column);
-                ListOfColumns.Add(column.Name);
-                countOfColumn += 1;
-                AddColumnInTable(column, countOfColumn);
+                foreach (var item in Items)
+                {
+                    Column column = new Column();
+                    if (item.ColumnName == null || item.ColumnName == "" || item.Type == null)
+                    {
+                        return true;
+                    }
+                    column.Name = item.ColumnName;
+                    column.Type = item.Type;
+                    column.IsPrimary = item.Primary;
+                    selectedScheme.Columns.Add(column);
+                    ListOfColumns.Add(column.Name);
+                    countOfColumn += 1;
+                    AddColumnInTable(column, countOfColumn);
+                }
             }
+            return false;
         }
         public bool CheckEqualsNames(string location)
         {
@@ -295,6 +325,10 @@ namespace HardLab5
                         return true;
                     }
                 }
+                if (SelectedColumn != null && SelectedColumn != "" && NewColumnName != null && NewColumnName != "" && SelectedColumn != "нет выбора")
+                {
+                    RemoveColumnName();
+                }
             }
             else if(location == "CreateNewColumn")
             {
@@ -302,7 +336,7 @@ namespace HardLab5
                 {
                     foreach (Column column in selectedScheme.Columns)
                     {
-                        if (column.Name == item.ColumnName)
+                        if ((column.Name == item.ColumnName || item.ColumnName == NewColumnName) && NewColumnName != null)
                         {
                             return true;
                         }
@@ -345,18 +379,15 @@ namespace HardLab5
                         }
                     case "string":
                         {
-                            row.Data.Add(column, null);
+                            row.Data.Add(column, "");
                             break;
                         }
                 }
             }
-            string pathTable = MainViewModel.folderPath + $"\\{selectedScheme.Name}.csv";
-            RewriteCSV(pathTable, countOfColumn);
+            RewriteCSV();
         }
-
         public void DeleteColumn()
         {
-            int countOfColumn = 0;
             foreach (Column column in selectedScheme.Columns)
             {
                 if (column.Name == SelectedColumnDelete)
@@ -367,23 +398,23 @@ namespace HardLab5
                     {
                         row.Data.Remove(column);
                     }
-                    string pathTable = MainViewModel.folderPath + $"\\{selectedScheme.Name}.csv";
-                    RewriteCSV(pathTable, countOfColumn);
                     break;
                 }
-                countOfColumn += 1;
             }
+           
+            RewriteCSV();
         }
 
-        public void RewriteCSV(string pathTable, int numberOfColumn)
+        public void RewriteCSV()
         {
+            string pathTable = MainViewModel.folderPath + $"\\{selectedScheme.Name}.csv";
             int count = 1;
             StringBuilder newFile = new StringBuilder();
             foreach (var row in selectedTable.Rows)
             {
                 foreach (Column column in row.Data.Keys)
                 {
-                    if (count == numberOfColumn)
+                    if (count == selectedScheme.Columns.Count)
                     {
                         newFile.Append($"{row.Data[column]}" + "\n");
                         break;
@@ -397,13 +428,24 @@ namespace HardLab5
 
         }
 
+        public void DeleteTableRow(int rowNumber)
+        {
+            int count = 0;
+            foreach(Row row in selectedTable.Rows)
+            {
+                if(count == rowNumber)
+                {
+                    selectedTable.Rows.Remove(row);
+                    break;
+                }
+                count += 1;
+            }
+            RewriteCSV();
+        }
+
         public void UpdateTable()
         {
-            Items.Clear();
-            NewColumnName = null;
-            SelectedColumn = null;
             DataNewTable.Clear();
-
             DataTable dataTable = new DataTable();
             foreach (Column column in selectedScheme.Columns)
             {
@@ -420,6 +462,14 @@ namespace HardLab5
                 dataTable.Rows.Add(newRow);
             }
             DataNewTable = dataTable;
+            ClearData();
+        }
+
+        public void ClearData()
+        {
+            Items.Clear();
+            NewColumnName = null;
+            SelectedColumn = null;
 
             ListOfColumns.Clear();
             ObservableCollection<string> names = new ObservableCollection<string>();
@@ -430,14 +480,8 @@ namespace HardLab5
             ListOfColumns = names;
             ListOfColumns.Add("нет выбора");
         }
-
         public bool EditTableData()
         {
-            int countOfRows = DataNewTable.Rows.Count;
-            //if (DataNewTable.Rows.Count > selectedTable.Rows.Count)
-            //{
-            //    countOfRows = DataNewTable.Rows.Count;
-            //}
             for (int i = 0; i < selectedTable.Rows.Count; i++)
             {
                 for (int j = 0; j < selectedScheme.Columns.Count; j++)
@@ -503,8 +547,6 @@ namespace HardLab5
                         else
                         {
                             System.Windows.MessageBox.Show($"В строке {numOfRow + 1} столбце {numOfColumn} введены некорректные данные");
-                            //DataNewTable.Rows[numOfRow][selectedScheme.Columns[numOfColumn].Name] = selectedTable.Rows[numOfRow].Data[selectedScheme.Columns[numOfColumn]];
-                            //return selectedTable.Rows[numOfRow].Data[selectedScheme.Columns[numOfColumn]];
                             return null;
                         }
                     }
@@ -551,5 +593,7 @@ namespace HardLab5
             }
             return null;
         }
+
+       
     }
 }

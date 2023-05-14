@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Data;
 using System.IO;
+using System.Net.NetworkInformation;
 using System.Runtime.CompilerServices;
 using System.Runtime.Remoting.Messaging;
 using System.Windows;
@@ -26,6 +27,7 @@ namespace HardLab5
         }
 
         public static Dictionary<TableScheme, Table> keyTables = new Dictionary<TableScheme, Table>();
+        List<TableScheme> schemes = new List<TableScheme>();
         public int countOfTables;
         public int countOfSchemes;
         public static string folderPath = "";
@@ -64,6 +66,7 @@ namespace HardLab5
             string folderName = folderPath.Split('\\')[folderPath.Split('\\').Length - 1];
             ((MainWindow)System.Windows.Application.Current.MainWindow).folderTree.Header = folderName;
 
+            
             countOfSchemes = countOfTables = 0;
             GetEquals(folderPath);
         });
@@ -71,43 +74,48 @@ namespace HardLab5
 
         public void GetEquals(string folderPath)
         {
-            ((MainWindow)System.Windows.Application.Current.MainWindow).folderTree.Items.Clear();
             foreach (string fileScheme in Directory.EnumerateFiles(folderPath))
             {
                 if (fileScheme.Contains("json"))
                 {
-                    countOfSchemes++;
                     TableScheme tableScheme = TableScheme.ReadFile(fileScheme);
-                    foreach (string fileTable in Directory.EnumerateFiles(folderPath))
-                    {
-                        if (fileTable.Contains("csv"))
-                        {
-                            try
-                            {
-                                Table table = TableData.GetInfoFromTable(tableScheme, fileTable);
-                                keyTables.Add(tableScheme, table);
-                                TreeViewItem treeViewItem = new TreeViewItem();
-                                treeViewItem.Header = fileTable.Split('\\')[(fileTable.Split('\\').Length - 1)];
-                                treeViewItem.Selected += TableSelected;
-                                treeViewItem.Unselected += TableUnselected;
-
-                                foreach (Column column in table.Scheme.Columns)
-                                {
-                                    treeViewItem.Items.Add(column.Name + " - " + column.Type + " - isPrimary: " + column.IsPrimary);
-                                }
-                                ((MainWindow)System.Windows.Application.Current.MainWindow).folderTree.Items.Add(treeViewItem);
-                            }
-                            catch
-                            {
-                                continue;
-                            }
-                        }
-                    }
-                    ((MainWindow)System.Windows.Application.Current.MainWindow).folderTree.Items.Add(fileScheme.Split('\\')[(fileScheme.Split('\\').Length - 1)]);
+                    schemes.Add(tableScheme);
                 }
-                if (fileScheme.Contains("csv"))
+            }
+            ((MainWindow)System.Windows.Application.Current.MainWindow).folderTree.Items.Clear();
+            foreach (string  fileTable in Directory.EnumerateFiles(folderPath))
+            {
+                if (fileTable.Contains("csv"))
                 {
                     countOfTables++;
+                    foreach (TableScheme tableScheme in schemes)
+                    {
+                        try
+                        {
+                            Table table = TableData.GetInfoFromTable(tableScheme, fileTable);
+                            keyTables.Add(tableScheme, table);
+                            TreeViewItem treeViewItem = new TreeViewItem();
+                            treeViewItem.Header = fileTable.Split('\\')[(fileTable.Split('\\').Length - 1)];
+                            treeViewItem.Selected += TableSelected;
+                            treeViewItem.Unselected += TableUnselected;
+
+                            foreach (Column column in table.Scheme.Columns)
+                            {
+                                treeViewItem.Items.Add(column.Name + " - " + column.Type + " - isPrimary: " + column.IsPrimary);
+                            }
+                            ((MainWindow)System.Windows.Application.Current.MainWindow).folderTree.Items.Add(treeViewItem);
+                            ((MainWindow)System.Windows.Application.Current.MainWindow).folderTree.Items.Add($"{tableScheme.Name}.json");
+                            break;
+                        }
+                        catch
+                        {
+                            continue;
+                        }
+                    }
+                }
+                if (fileTable.Contains("json"))
+                {
+                    countOfSchemes++;
                 }
             }
             GetExeption();
@@ -175,29 +183,22 @@ namespace HardLab5
             GetEquals(folderPath);
         });
 
-        public static WindowDB wind;
         public ICommand CreateNewDB => new DelegateCommand(param =>
         {
-            if (wind == null)
-            {
-                wind = new WindowDB();
-                wind.ShowDialog();
-            }
-            //else wind.Activate();
+            WindowDB wind = new WindowDB();
+            ViewModelNewDB vmNewDB = new ViewModelNewDB();
+            wind.DataContext = vmNewDB;
+            vmNewDB.WindowDB = wind;
+            wind.ShowDialog();
         });
 
 
-        public static WindowTable wind1;
         public ICommand CreateNewTable => new DelegateCommand(param =>
         {
             if (((MainWindow)System.Windows.Application.Current.MainWindow).folderTree.Header != null)
             {
-                //if (wind == null)
-                //{
-                    wind1 = new WindowTable();
-                    wind1.ShowDialog();
-                //}
-                //else wind1.Activate();
+                WindowTable wind1 = new WindowTable();
+                wind1.ShowDialog();
             }
             else
             {
@@ -210,12 +211,10 @@ namespace HardLab5
         {
             if (DataTable != null)
             {
-                //if (wind == null)
-                //{
-                wind2 = new WindowEditTable();
+                WindowEditTable wind2 = new WindowEditTable();
                 ViewModelEditTable vmEditTable = new ViewModelEditTable();
                 wind2.DataContext = vmEditTable;
-
+                vmEditTable.DataGrid = wind2.DataGridEditTable;
                 vmEditTable.DataNewTable = copyDataTable;
                 vmEditTable.TableName = tableName;
                 ObservableCollection<string> names = new ObservableCollection<string>();
@@ -228,8 +227,6 @@ namespace HardLab5
                 vmEditTable.selectedScheme = selectedScheme;
                 vmEditTable.selectedTable = selectedTable;
                 wind2.ShowDialog();
-                //}
-                //else wind1.Activate();
             }
             else
             {

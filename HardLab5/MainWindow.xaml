@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:HardLab5" d:DataContext="{d:DesignInstance Type=local:MainViewModel}"
         mc:Ignorable="d"
-        Title="MainWindow" Height="600" Width="800">
+        Title="MainWindow" Height="620" Width="800">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="20*"/>
@@ -32,23 +32,23 @@
             </MenuItem>
         </Menu>
 
-        <TextBlock Grid.Column="1" Grid.Row ="1" Text="Структура исходной базы данных" Background="DarkSeaGreen" ></TextBlock>
-        <TextBlock Grid.Column="3" Grid.Row ="1" Text="Таблица" Background="DarkSeaGreen" Grid.ColumnSpan="4"></TextBlock>
-        <TextBox Name="TextBox1" Grid.Column="1" Grid.Row ="5"  Foreground="Salmon" >
+        <TextBlock FontSize="14" Grid.Column="1" Grid.Row ="1" Text="База данных" Background="DarkSeaGreen" TextWrapping="Wrap" TextAlignment="Center"></TextBlock>
+        <TextBlock FontSize="14" Grid.Column="3" Grid.Row ="1" Text="Таблица" Background="DarkSeaGreen" Grid.ColumnSpan="4" TextWrapping="Wrap" TextAlignment="Center"></TextBlock>
+        <TextBox Name="TextBox1" Grid.Column="1" Grid.Row ="5"  Foreground="Salmon" TextWrapping="Wrap" VerticalScrollBarVisibility="Visible" AcceptsReturn="True" >
         </TextBox>
         <TreeView Grid.Column="1" Grid.Row="3">
             <TreeViewItem Name="folderTree" />
         </TreeView>
         <DataGrid Name="DataGrid"  Grid.Column="3" Grid.Row="3"  AutoGenerateColumns="True" ItemsSource="{Binding DataTable}"  CanUserAddRows="False" 
                   RowBackground="LightYellow" AlternatingRowBackground="LightBlue" Grid.ColumnSpan="4"/>
-        <Button x:Name="CreateDB" Command="{Binding  CreateNewDB}"   Grid.Column="3" Grid.Row="5" Content="Создать БД" Background="DarkSeaGreen"/>
-        <Button x:Name="CreateNewTable" Command="{Binding  CreateNewTable}" Grid.Column="4" Grid.Row="5" Content="Создать таблицу" Background="DarkSeaGreen"/>
+        <Button x:Name="CreateDB" Command="{Binding  CreateNewDB}" FontSize="14" Grid.Column="3" Grid.Row="5" Content="Создать БД" Background="DarkSeaGreen"/>
+        <Button x:Name="CreateNewTable" Command="{Binding  CreateNewTable}" FontSize="14" Grid.Column="4" Grid.Row="5" Content="Создать таблицу" Background="DarkSeaGreen"/>
         <Button x:Name="Edit" Command="{Binding  EditTable}" Grid.Column="5" Grid.Row="5" Background="DarkSeaGreen">
             <Button.Content>
-                <TextBlock Text="Редактировать таблицу" TextWrapping="Wrap" TextAlignment="Center"/>
+                <TextBlock FontSize="14" Text="Редактировать таблицу" TextWrapping="Wrap" TextAlignment="Center"/>
             </Button.Content>
         </Button>
-        <Button x:Name="Update" Command="{Binding  UpdateFile}" Grid.Column="6" Grid.Row="5" Content="Обновить" Background="DarkSeaGreen"/>
+        <Button x:Name="Update" Command="{Binding  UpdateFile}" FontSize="14" Grid.Column="6" Grid.Row="5" Content="Обновить" Background="DarkSeaGreen"/>
     </Grid>
 </Window>
 

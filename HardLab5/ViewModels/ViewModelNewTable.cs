@@ -27,29 +27,27 @@ namespace HardLab5
         }
 
         
-       // private bool _isChecked;
         public ObservableCollection<ViewModelNewTable> Items { get; } = new ObservableCollection<ViewModelNewTable>();
 
-        private string _text;
-        public string Text
+        private string _columnName;
+        public string ColumnName
         {
-            get { return _text; }
+            get { return _columnName; }
             set
             {
-                //if (value == _text) return;
-                _text = value;
+                _columnName = value;
                 OnPropertyChanged();
             }
         }
 
 
-        private string _message;
-        public string Message
+        private string _tableName;
+        public string TableName
         {
-            get { return _message; }
+            get { return _tableName; }
             set
             {
-                _message = value;
+                _tableName = value;
                 OnPropertyChanged();
             }
         }
@@ -97,22 +95,22 @@ namespace HardLab5
 
         public ICommand CreateTable => new DelegateCommand(param =>
         {
-            if (Message == null || Message == "" || Items == null)
+            if (TableName == null || TableName == "" || Items == null)
             {
                 MessageBox.Show("Данные не заполнены до конца");
                 return;
             }
-            string name = Message;
+            string name = TableName;
             List<Column> columns = new List<Column>();
             foreach (var item in Items)
             {
                 Column column = new Column();
-                if(item.Text == null || item.Text == "" || item.Type == null)
+                if(item.ColumnName == null || item.ColumnName == "" || item.Type == null)
                 {
                     MessageBox.Show("Данные не заполнены до конца");
                     return;
                 }
-                column.Name = item.Text;
+                column.Name = item.ColumnName;
                 column.Type = item.Type;
                 column.IsPrimary = item.Primary;
                 columns.Add(column);
@@ -124,21 +122,22 @@ namespace HardLab5
                 Columns = columns
             };
 
-            if (CheckEqualsNames(tableScheme))
+            if (CheckEqualsNames())
             {
                 System.Windows.MessageBox.Show("Найдены столбцы с повторяющимися именами");
                 return;
             }
 
             string jsonNewScheme = JsonSerializer.Serialize<TableScheme>(tableScheme);
-            string pathOfScheme = MainViewModel.folderPath + $"\\{tableScheme.Name}.json";
-            File.WriteAllText(pathOfScheme, jsonNewScheme);
+            File.WriteAllText(MainViewModel.folderPath + $"\\{tableScheme.Name}.json", jsonNewScheme);
 
             string pathTable = MainViewModel.folderPath + $"\\{tableScheme.Name}.csv";
             string newFile = AddColumnInTable(columns);
             File.WriteAllText(pathTable, newFile.ToString());
 
             System.Windows.MessageBox.Show("Успешно!");
+            Items.Clear();
+            TableName = null;
         });
 
         public string AddColumnInTable(List<Column> columns)
@@ -177,7 +176,7 @@ namespace HardLab5
                         }
                     case "string":
                         {
-                            newFile.Append($"{null}");
+                            newFile.Append($"");
                             break;
                         }
                 }
@@ -189,13 +188,13 @@ namespace HardLab5
             return newFile.ToString();
         }
 
-        public bool CheckEqualsNames(TableScheme tableScheme)
+        public bool CheckEqualsNames()
         {
             for(int i = 0; i < Items.Count()-1; i++)
             {
                 for(int j = i+1; j < Items.Count(); j++)
                 {
-                    if (Items[i].Text == Items[j].Text)
+                    if (Items[i].ColumnName == Items[j].ColumnName)
                     {
                         return true;
                     }
@@ -203,16 +202,5 @@ namespace HardLab5
             }
             return false;
         }
-
-        //private void CloseWindow(object obj)
-        //{
-        //    Close(obj, true);
-        //}
-        //void Close(object obj, bool dialogResult)
-        //{
-        //    var w = ((WindowTable)(System.Windows.Window)obj);
-        //    w.DialogResult = dialogResult;
-        //    w.Close();
-        //}
     }
 }

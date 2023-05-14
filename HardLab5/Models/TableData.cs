@@ -18,7 +18,7 @@ namespace HardLab5
             {
                 string[] line = lines[i].Split(';');
 
-                if (line.Length > tableScheme.Columns.Count)
+                if (line.Length != tableScheme.Columns.Count)
                 {
                     throw new ArgumentException();
                 }

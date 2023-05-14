@@ -31,7 +31,7 @@
         </Grid.ColumnDefinitions>
 
         <TextBlock Grid.Row ="1" Grid.Column="1" Grid.ColumnSpan="2" VerticalAlignment="Center" HorizontalAlignment="Center" >Название таблицы:</TextBlock>
-        <TextBox Text="{Binding  Message}" x:Name="NameTable" Grid.Row ="1" Grid.Column="3" Grid.ColumnSpan="2" TextWrapping="Wrap"  TextAlignment="Center"></TextBox>
+        <TextBox Text="{Binding  TableName}" x:Name="NameTable" Grid.Row ="1" Grid.Column="3" Grid.ColumnSpan="2" TextWrapping="Wrap"  TextAlignment="Center"></TextBox>
         <Button x:Name="AddColumns" Command="{Binding  CreateColumns}" Grid.Column="1" Grid.Row="8" Content="Добавить столбец" Grid.ColumnSpan="2"  Background="DarkSeaGreen"/>
         <Button x:Name="RemoveColumns" Command="{Binding  RemoveColumn}" Grid.Column="3" Grid.Row="8" Content="Удалить столбец" Grid.ColumnSpan="2"  Background="DarkSeaGreen"/>
         <ScrollViewer Grid.Row="2"  Grid.Column="1" Grid.ColumnSpan="4"  Grid.RowSpan="6">
@@ -41,7 +41,7 @@
                         <StackPanel Orientation="Vertical">
                             <TextBlock></TextBlock>
                             <TextBlock>Название:</TextBlock>
-                            <TextBox Text="{Binding Text}" Grid.ColumnSpan="2"/>
+                            <TextBox Text="{Binding ColumnName}" Grid.ColumnSpan="2"/>
                             <TextBlock>Тип:</TextBlock>
                             <ComboBox  Grid.Column="2" Grid.ColumnSpan="2" SelectedItem ="{Binding Type}">
                                 <sys:String>string</sys:String>

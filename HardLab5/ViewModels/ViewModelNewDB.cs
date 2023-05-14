@@ -16,6 +16,8 @@ namespace HardLab5
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
         }
 
+        public WindowDB WindowDB { get; set; }
+
         public string folderPathDB = "";
 
         private string _message;
@@ -63,6 +65,7 @@ namespace HardLab5
             string folderName = folderPathDB.Split('\\')[folderPathDB.Split('\\').Length - 1];
             ((MainWindow)System.Windows.Application.Current.MainWindow).folderTree.Header = folderName;
             MainViewModel.folderPath = folderPathDB;
+            WindowDB.Close();
         });
     }
 }
