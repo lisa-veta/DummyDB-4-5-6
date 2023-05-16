@@ -1,10 +1,8 @@
 ﻿using System.ComponentModel;
-using System.Data;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Windows.Forms;
 using System.Windows.Input;
-
 namespace HardLab5
 {
     class ViewModelNewDB : INotifyPropertyChanged

@@ -5,7 +5,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Xml.Linq;
 
-namespace HardLab5
+namespace DummyDB.Core
 {
     /// <summary>
     /// Логика взаимодействия для MainWindow.xaml
@@ -27,13 +27,13 @@ namespace HardLab5
             return JsonSerializer.Deserialize<TableScheme>(File.ReadAllText(path));
         }
 
-        public static void SafeNewData(TableScheme tableScheme)
-        {
-            string jsonNewScheme = JsonSerializer.Serialize<TableScheme>(tableScheme);
-            string pathOfScheme = MainViewModel.folderPath + $"\\{tableScheme.Name}.json";
-            string pathOfTable = MainViewModel.folderPath + $"\\{tableScheme.Name}.csv";
-            File.WriteAllText(pathOfScheme, jsonNewScheme);
-            File.Create(pathOfTable);
-        }
+        //public static void SafeNewData(TableScheme tableScheme)
+        //{
+        //    string jsonNewScheme = JsonSerializer.Serialize<TableScheme>(tableScheme);
+        //    string pathOfScheme = MainViewModel.folderPath + $"\\{tableScheme.Name}.json";
+        //    string pathOfTable = MainViewModel.folderPath + $"\\{tableScheme.Name}.csv";
+        //    File.WriteAllText(pathOfScheme, jsonNewScheme);
+        //    File.Create(pathOfTable);
+        //}
     }
 }

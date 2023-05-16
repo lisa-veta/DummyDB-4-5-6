@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace HardLab5
+namespace DummyDB.Core
 {
     public class Row
     {

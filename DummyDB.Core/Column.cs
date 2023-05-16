@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace HardLab5
+namespace DummyDB.Core
 {
     public class Column
     {

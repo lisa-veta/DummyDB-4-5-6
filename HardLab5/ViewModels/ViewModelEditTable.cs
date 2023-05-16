@@ -1,23 +1,15 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Data;
-using System.Data.Common;
 using System.IO;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Runtime.Remoting.Messaging;
 using System.Text;
 using System.Text.Json;
-using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms;
 using System.Windows.Input;
-using System.Windows.Markup;
-using System.Xml.Linq;
-
+using DummyDB.Core;
 namespace HardLab5
 {
     class ViewModelEditTable : INotifyPropertyChanged
@@ -186,11 +178,16 @@ namespace HardLab5
 
         public ICommand DeleteRow => new DelegateCommand(param =>
         {
+            if(DataGrid.SelectedItem == null)
+            {
+                MessageBox.Show("Строка для удаления не была выделена");
+                return;
+            }
             for(int i = 0; i < DataGrid.Columns.Count; i++)
             {
                 if (DataGrid.Items[i] == DataGrid.SelectedItem)
                 {
-                    DialogResult dialogResult = System.Windows.Forms.MessageBox.Show($"Вы уверены, что хотите безвозвратно удалить {i+1} строку?", "Подтверждение действий", MessageBoxButtons.YesNo); ;
+                    DialogResult dialogResult = MessageBox.Show($"Вы уверены, что хотите безвозвратно удалить {i+1} строку?", "Подтверждение действий", MessageBoxButtons.YesNo); ;
                     if (dialogResult == DialogResult.Yes)
                     {
                         DeleteTableRow(i);
@@ -222,7 +219,7 @@ namespace HardLab5
             }
             if (SelectedColumnDelete != null && SelectedColumnDelete != "нет выбора")
             {
-                DialogResult dialogResult = System.Windows.Forms.MessageBox.Show("Вы уверены, что хотите безвозвратно удалить столбец?", "Подтверждение действий", MessageBoxButtons.YesNo);
+                DialogResult dialogResult = MessageBox.Show("Вы уверены, что хотите безвозвратно удалить столбец?", "Подтверждение действий", MessageBoxButtons.YesNo);
                 if (dialogResult == DialogResult.Yes)
                 {
                     DeleteColumn();
@@ -246,6 +243,8 @@ namespace HardLab5
             {
                 return;
             }
+            RewriteCSV();
+            //UpdateTable();
         });
 
         public bool GetEx()
@@ -291,11 +290,11 @@ namespace HardLab5
         {
             if(Items != null)
             {
-                int countOfColumn = 0;
-                foreach (Column column in selectedScheme.Columns)
-                {
-                    countOfColumn += 1;
-                }
+                //int countOfColumn = 0;
+                //foreach (Column column in selectedScheme.Columns)
+                //{
+                //    countOfColumn += 1;
+                //}
                 foreach (var item in Items)
                 {
                     Column column = new Column();
@@ -308,8 +307,8 @@ namespace HardLab5
                     column.IsPrimary = item.Primary;
                     selectedScheme.Columns.Add(column);
                     ListOfColumns.Add(column.Name);
-                    countOfColumn += 1;
-                    AddColumnInTable(column, countOfColumn);
+                   // countOfColumn += 1;
+                    AddColumnInTable(column);
                 }
             }
             return false;
@@ -346,7 +345,7 @@ namespace HardLab5
             return false;
         }
 
-        public void AddColumnInTable(Column column, int countOfColumn)
+        public void AddColumnInTable(Column column)
         {
             foreach (var row in selectedTable.Rows)
             {
@@ -401,7 +400,6 @@ namespace HardLab5
                     break;
                 }
             }
-           
             RewriteCSV();
         }
 
@@ -425,7 +423,6 @@ namespace HardLab5
                 count = 1;
             }
             File.WriteAllText(pathTable, newFile.ToString());
-
         }
 
         public void DeleteTableRow(int rowNumber)
@@ -514,6 +511,7 @@ namespace HardLab5
                             return true;
                         }
                         row.Data[selectedScheme.Columns[j]] = data;
+                        DataNewTable.Rows[i][selectedScheme.Columns[j].Name] = data;
                     }
                     selectedTable.Rows.Add(row);
                 }
@@ -532,11 +530,11 @@ namespace HardLab5
                         {
                             return number;
                         }
-                        else
+                        else if (ShowMessage(numOfRow + 1, numOfColumn + 1))
                         {
-                            System.Windows.MessageBox.Show($"В строке {numOfRow + 1} столбце {numOfColumn} введены некорректные данные");
-                            return null;
+                            return 0;
                         }
+                        return null;
                     }
                 case "int":
                     {
@@ -544,11 +542,11 @@ namespace HardLab5
                         {
                            return number;
                         }
-                        else
+                        else if (ShowMessage(numOfRow + 1, numOfColumn + 1))
                         {
-                            System.Windows.MessageBox.Show($"В строке {numOfRow + 1} столбце {numOfColumn} введены некорректные данные");
-                            return null;
+                            return 0;
                         }
+                        return null;
                     }
                 case "float":
                     {
@@ -556,11 +554,11 @@ namespace HardLab5
                         {
                             return number;
                         }
-                        else
+                        else if (ShowMessage(numOfRow + 1, numOfColumn + 1))
                         {
-                            System.Windows.MessageBox.Show($"В строке {numOfRow + 1} столбце {numOfColumn} введены некорректные данные");
-                            return null;
+                            return 0;
                         }
+                        return null;
                     }
                 case "double":
                     {
@@ -568,11 +566,11 @@ namespace HardLab5
                         {
                             return number;
                         }
-                        else
+                        else if (ShowMessage(numOfRow + 1, numOfColumn + 1))
                         {
-                            System.Windows.MessageBox.Show($"В строке {numOfRow + 1} столбце {numOfColumn} введены некорректные данные");
-                            return null;
+                            return 0;
                         }
+                        return null;
                     }
                 case "datetime":
                     {
@@ -580,11 +578,11 @@ namespace HardLab5
                         {
                             return number;
                         }
-                        else
+                        else if (ShowMessage(numOfRow + 1, numOfColumn + 1))
                         {
-                            System.Windows.MessageBox.Show($"В строке {numOfRow + 1} столбце {numOfColumn} введены некорректные данные");
-                            return null;
+                            return DateTime.MinValue;
                         }
+                        return null;
                     }
                 case "string":
                     {
@@ -594,6 +592,18 @@ namespace HardLab5
             return null;
         }
 
-       
+       public bool ShowMessage(int numOfRow, int numOfColumn)
+        {
+            DialogResult dialogResult = MessageBox.Show($"В строке {numOfRow} столбце {numOfColumn} введены некорректные данные или найдены пустые ячейки, они будут заполнены значениями по умолчанию", "Подтверждение действий", MessageBoxButtons.YesNo);
+            if (dialogResult == DialogResult.Yes)
+            {
+                return true;
+            }
+            else if(dialogResult == DialogResult.No)
+            {
+                return false;
+            }
+            return false;
+        }
     }
 }

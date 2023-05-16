@@ -1,19 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Data;
 using System.IO;
-using System.Net.NetworkInformation;
 using System.Runtime.CompilerServices;
-using System.Runtime.Remoting.Messaging;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms;
 using System.Windows.Input;
-using System.Windows.Media;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
-using Window = System.Windows.Window;
+using DummyDB.Core;
 
 namespace HardLab5
 {
@@ -97,7 +92,6 @@ namespace HardLab5
                             TreeViewItem treeViewItem = new TreeViewItem();
                             treeViewItem.Header = fileTable.Split('\\')[(fileTable.Split('\\').Length - 1)];
                             treeViewItem.Selected += TableSelected;
-                            treeViewItem.Unselected += TableUnselected;
 
                             foreach (Column column in table.Scheme.Columns)
                             {
@@ -167,11 +161,6 @@ namespace HardLab5
             }
             DataTable = dataTable;
             copyDataTable = dataTable;
-        }
-
-        private void TableUnselected(object sender, RoutedEventArgs e)
-        {
-            ((MainWindow)System.Windows.Application.Current.MainWindow).DataGrid.Columns.Clear();
         }
 
         public ICommand UpdateFile => new DelegateCommand(param =>
