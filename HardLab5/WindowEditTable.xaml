@@ -75,7 +75,6 @@
                                 <sys:String>string</sys:String>
                                 <sys:String>int</sys:String>
                                 <sys:String>uint</sys:String>
-                                <sys:String>float</sys:String>
                                 <sys:String>double</sys:String>
                                 <sys:String>datetime</sys:String>
                             </ComboBox>

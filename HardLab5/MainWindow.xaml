@@ -34,7 +34,7 @@
 
         <TextBlock FontSize="14" Grid.Column="1" Grid.Row ="1" Text="База данных" Background="DarkSeaGreen" TextWrapping="Wrap" TextAlignment="Center"></TextBlock>
         <TextBlock FontSize="14" Grid.Column="3" Grid.Row ="1" Text="Таблица" Background="DarkSeaGreen" Grid.ColumnSpan="4" TextWrapping="Wrap" TextAlignment="Center"></TextBlock>
-        <TextBox Name="TextBox1" Grid.Column="1" Grid.Row ="5"  Foreground="Salmon" TextWrapping="Wrap" VerticalScrollBarVisibility="Visible" AcceptsReturn="True" >
+        <TextBox Name="TextBox" Text ="{Binding Message}" Grid.Column="1" Grid.Row ="5"  Foreground="Salmon" TextWrapping="Wrap" VerticalScrollBarVisibility="Visible" AcceptsReturn="True" >
         </TextBox>
         <TreeView Grid.Column="1" Grid.Row="3">
             <TreeViewItem Name="folderTree" />

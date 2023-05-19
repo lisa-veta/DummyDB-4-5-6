@@ -1,35 +1,30 @@
-﻿using System.ComponentModel;
+﻿using HardLab5.ViewModels;
+using System.ComponentModel;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Windows.Forms;
 using System.Windows.Input;
 namespace HardLab5
 {
-    class ViewModelNewDB : INotifyPropertyChanged
+    class ViewModelNewDB : BaseViewModel
     {
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        protected void OnPropertyChanged([CallerMemberName] string prop = "")
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
-        }
-
+        public string folderPath;
         public WindowDB WindowDB { get; set; }
 
         public string folderPathDB = "";
 
-        private string _message;
-        public string Message
+        private string _newName;
+        public string NewName
         {
-            get { return _message; }
+            get { return _newName; }
             set
             {
-                _message = value;
+                _newName = value;
                 OnPropertyChanged();
             }
         }
-
-        public string Message1
+        private string _message;
+        public string Message
         {
             get { return _message; }
             set
@@ -42,28 +37,43 @@ namespace HardLab5
         {
             FolderBrowserDialog openFolderDialog = new FolderBrowserDialog();
 
-            if (openFolderDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            if (openFolderDialog.ShowDialog() == DialogResult.OK)
             {
                 folderPathDB = openFolderDialog.SelectedPath;
             }
-            folderPathDB += "\\" + Message;
-            Message1 = "Путь к папке:\n" + folderPathDB;
+            folderPathDB += "\\" + NewName;
+            Message = "Путь к папке:\n" + folderPathDB;
         });
 
         public ICommand Create => new DelegateCommand(param =>
         {
-            if(folderPathDB == "" || Message == "")
+            if (folderPathDB == "" || NewName == "" || NewName == null)
             {
                 MessageBox.Show("Вы не ввели имя БД или не выбрали путь!");
                 return;
             }
+            folderPathDB += "\\" + NewName;
+
             Directory.CreateDirectory(folderPathDB);
-            MessageBox.Show("Папка для новой БД успешно создана! " + Message1 + "\n");
-            Message = "";
+            MessageBox.Show("Папка для новой БД успешно создана! " + Message + "\n");
+            NewName = "";
             string folderName = folderPathDB.Split('\\')[folderPathDB.Split('\\').Length - 1];
             ((MainWindow)System.Windows.Application.Current.MainWindow).folderTree.Header = folderName;
-            MainViewModel.folderPath = folderPathDB;
+            folderPath = folderPathDB;
+            ClearData();
             WindowDB.Close();
         });
+
+        public ICommand UndoAction => new DelegateCommand(param =>
+        {
+            folderPath = null;
+            ClearData();
+        });
+
+        private void ClearData()
+        {
+            NewName = null;
+            Message = null;
+        }
     }
 }

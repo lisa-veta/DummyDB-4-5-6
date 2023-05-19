@@ -10,21 +10,16 @@ using System.Text.Json;
 using System.Windows.Forms;
 using System.Windows.Input;
 using DummyDB.Core;
+using HardLab5.ViewModels;
 
 namespace HardLab5
 {
-    class ViewModelNewTable : INotifyPropertyChanged
+    class ViewModelNewTable : BaseViewModel
     {
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        protected void OnPropertyChanged([CallerMemberName] string prop = "")
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
-        }
-
-        
         public ObservableCollection<ViewModelNewTable> Items { get; } = new ObservableCollection<ViewModelNewTable>();
 
+
+        public string folderPath;
         private string _columnName;
         public string ColumnName
         {
@@ -35,7 +30,6 @@ namespace HardLab5
                 OnPropertyChanged();
             }
         }
-
 
         private string _tableName;
         public string TableName
@@ -73,7 +67,6 @@ namespace HardLab5
         public ICommand CreateColumns => new DelegateCommand(param =>
         {
             Items.Add(new ViewModelNewTable());
-
         });
         public ICommand RemoveColumn => new DelegateCommand(param =>
         {
@@ -91,27 +84,13 @@ namespace HardLab5
 
         public ICommand CreateTable => new DelegateCommand(param =>
         {
-            if (TableName == null || TableName == "" || Items == null)
+            if (TableName == null || TableName == "" || Items.Count == 0 || CheckEqualsData())
             {
                 MessageBox.Show("Данные не заполнены до конца");
                 return;
             }
             string name = TableName;
-            List<Column> columns = new List<Column>();
-            foreach (var item in Items)
-            {
-                Column column = new Column();
-                if(item.ColumnName == null || item.ColumnName == "" || item.Type == null)
-                {
-                    MessageBox.Show("Данные не заполнены до конца");
-                    return;
-                }
-                column.Name = item.ColumnName;
-                column.Type = item.Type;
-                column.IsPrimary = item.Primary;
-                columns.Add(column);
-                
-            }
+            List<Column> columns = GetList();
             TableScheme tableScheme = new TableScheme
             {
                 Name = name,
@@ -123,20 +102,10 @@ namespace HardLab5
                 System.Windows.MessageBox.Show("Найдены столбцы с повторяющимися именами");
                 return;
             }
-
-            string jsonNewScheme = JsonSerializer.Serialize<TableScheme>(tableScheme);
-            File.WriteAllText(MainViewModel.folderPath + $"\\{tableScheme.Name}.json", jsonNewScheme);
-
-            string pathTable = MainViewModel.folderPath + $"\\{tableScheme.Name}.csv";
-            string newFile = AddColumnInTable(columns);
-            File.WriteAllText(pathTable, newFile.ToString());
-
-            System.Windows.MessageBox.Show("Успешно!");
-            Items.Clear();
-            TableName = null;
+            CreateFiles(tableScheme, columns);
         });
 
-        public string AddColumnInTable(List<Column> columns)
+        private string AddColumnInTable(List<Column> columns)
         {
             StringBuilder newFile = new StringBuilder();
             int count = 0;
@@ -151,11 +120,6 @@ namespace HardLab5
                             break;
                         }
                     case "int":
-                        {
-                            newFile.Append("0");
-                            break;
-                        }
-                    case "float":
                         {
                             newFile.Append("0");
                             break;
@@ -184,7 +148,7 @@ namespace HardLab5
             return newFile.ToString();
         }
 
-        public bool CheckEqualsNames()
+        private bool CheckEqualsNames()
         {
             for(int i = 0; i < Items.Count()-1; i++)
             {
@@ -197,6 +161,46 @@ namespace HardLab5
                 }
             }
             return false;
+        }
+        private List<Column> GetList()
+        {
+            List<Column> columns = new List<Column>();
+            foreach (var item in Items)
+            {
+                Column column = new Column();
+                column.Name = item.ColumnName;
+                column.Type = item.Type;
+                column.IsPrimary = item.Primary;
+                columns.Add(column);
+            }
+            return columns;
+        }
+
+        private bool CheckEqualsData()
+        {
+            foreach (var item in Items)
+            {
+                if (item.ColumnName == null || item.ColumnName == "" || item.Type == null)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private void CreateFiles(TableScheme tableScheme, List<Column> columns)
+        {
+            string pathScheme = folderPath + $"\\{tableScheme.Name}.json";
+            string pathTable = folderPath + $"\\{tableScheme.Name}.csv";
+            string jsonNewScheme = JsonSerializer.Serialize<TableScheme>(tableScheme);
+            
+            File.WriteAllText(pathScheme, jsonNewScheme);
+            string newFile = AddColumnInTable(columns);
+            File.WriteAllText(pathTable, newFile);
+
+            System.Windows.MessageBox.Show("Успешно!");
+            Items.Clear();
+            TableName = null;
         }
     }
 }

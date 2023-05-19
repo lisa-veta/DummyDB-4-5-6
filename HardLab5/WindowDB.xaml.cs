@@ -22,7 +22,6 @@ namespace HardLab5
         public WindowDB()
         {
             InitializeComponent();
-            DataContext = new ViewModelNewDB();
         }
     }
 }

@@ -8,7 +8,6 @@ namespace DummyDB.Core
     {
         public static Table GetInfoFromTable(TableScheme tableScheme,  string pathTable)
         {
-            //TableScheme tableScheme = TableScheme.ReadFile(pathScheme);
             Table table = new Table();
             table.Rows = new List<Row>();
             table.Scheme = tableScheme;
@@ -24,7 +23,6 @@ namespace DummyDB.Core
                 }
                 else
                 {
-                    //Row row = ReadRow(line, i, pathTable, tableScheme);
                     table.Rows.Add(ReadRow(line, i, pathTable, tableScheme));
                 }
             }
@@ -47,11 +45,6 @@ namespace DummyDB.Core
                     case "int":
                         {
                             row.Data.Add(tableScheme.Columns[i], CheckInt(line[i], pathTable, numberOfLine, i));
-                            break;
-                        }
-                    case "float":
-                        {
-                            row.Data.Add(tableScheme.Columns[i], CheckFloat(line[i], pathTable, numberOfLine, i));
                             break;
                         }
                     case "double":
@@ -92,14 +85,14 @@ namespace DummyDB.Core
             throw new ArgumentException($"Ошибка в файле <{pathTable}>, в строке номер {numberOfLine + 1}, столбце номер  {numberOfColumn + 1}. Описание ошибки: некорректные данные");
         }
 
-        private static float CheckFloat(string element, string pathTable, int numberOfLine, int numberOfColumn)
-        {
-            if (float.TryParse(element, out float number))
-            {
-                return number;
-            }
-            throw new ArgumentException($"Ошибка в файле <{pathTable}>, в строке номер {numberOfLine + 1}, столбце номер  {numberOfColumn + 1}. Описание ошибки: некорректные данные");
-        }
+        //private static float CheckFloat(string element, string pathTable, int numberOfLine, int numberOfColumn)
+        //{
+        //    if (float.TryParse(element, out float number))
+        //    {
+        //        return number;
+        //    }
+        //    throw new ArgumentException($"Ошибка в файле <{pathTable}>, в строке номер {numberOfLine + 1}, столбце номер  {numberOfColumn + 1}. Описание ошибки: некорректные данные");
+        //}
 
         private static double CheckDouble(string element, string pathTable, int numberOfLine, int numberOfColumn)
         {

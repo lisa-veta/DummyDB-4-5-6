@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:HardLab5" d:DataContext="{d:DesignInstance Type=local:ViewModelNewDB}"
         mc:Ignorable="d"
-        Title="WindowDB" Height="300" Width="320">
+        Title="WindowDB" Height="300" Width="440">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="5*"/>
@@ -13,22 +13,23 @@
             <RowDefinition Height="10*"/>
             <RowDefinition Height="10*"/>
             <RowDefinition Height="10*"/>
-            <RowDefinition Height="10*"/>
+            <RowDefinition Height="15*"/>
             <RowDefinition Height="10*"/>
             <RowDefinition Height="5*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="30*" />
-            <ColumnDefinition Width="240*" />
+            <ColumnDefinition Width="120*" />
+            <ColumnDefinition Width="120*" />
             <ColumnDefinition Width="30*" />
         </Grid.ColumnDefinitions>
-        <TextBlock Grid.Column="1" Grid.Row="1"  VerticalAlignment="Center" HorizontalAlignment="Center">Введите название БД</TextBlock>
-        <TextBox Text="{Binding  Message}" x:Name="NameDB" Grid.Column="1" Grid.Row="2"></TextBox>
-        <TextBlock Grid.Column="1" Grid.Row="3" VerticalAlignment="Center" HorizontalAlignment="Center">Выберите путь:</TextBlock>
-        <Button x:Name="Createfile" Command="{Binding  CreateNewFile}" Grid.Column="1" Grid.Row="4" Content="Выбрать путь"/>
-        <TextBlock x:Name="TextBlock" Text="{Binding  Message1}" Grid.Column="1" Grid.Row="5" VerticalAlignment="Center" HorizontalAlignment="Center"></TextBlock>
-        <Button x:Name="OK" Command="{Binding  Create}" Grid.Column="1" Grid.Row="5" Content="Cоздать"  Grid.RowSpan="3" Margin="0,40,120,20"/>
-        <Button x:Name="NO" Command="{Binding  CreateNe}" Grid.Column="1" Grid.Row="5" Content="Отменить" Grid.RowSpan="3" Margin="120,40,0,20"/>
+        <TextBlock Grid.Column="1"  Grid.ColumnSpan="2" Grid.Row="1"  VerticalAlignment="Center" HorizontalAlignment="Center">Введите название БД:</TextBlock>
+        <TextBox Text="{Binding  NewName}" x:Name="NameDB" Grid.ColumnSpan="2" Grid.Column="1" Grid.Row="2"></TextBox>
+        <TextBlock Grid.Column="1" Grid.Row="3"  Grid.ColumnSpan="2" VerticalAlignment="Center" HorizontalAlignment="Center">Выберите путь:</TextBlock>
+        <Button x:Name="Createfile" Command="{Binding  CreateNewFile}" Grid.ColumnSpan="2" Grid.Column="1" Grid.Row="4" Content="Выбрать путь"  Background="DarkSeaGreen"/>
+        <TextBlock x:Name="TextBlock" Text="{Binding  Message}" Grid.Column="1" Grid.Row="5" Grid.ColumnSpan="2"  TextWrapping="Wrap"></TextBlock>
+        <Button x:Name="OK" Command="{Binding  Create}" Grid.Column="1" Grid.Row="6" Content="Cоздать"   Background="DarkSeaGreen"/>
+        <Button x:Name="NO" Command="{Binding  UndoAction}" Grid.Column="2" Grid.Row="6" Content="Отменить"  Background="DarkSeaGreen"/>
         
     </Grid>
 </Window>

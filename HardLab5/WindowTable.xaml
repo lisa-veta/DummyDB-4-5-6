@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:HardLab5" xmlns:sys="clr-namespace:System;assembly=mscorlib" d:DataContext="{d:DesignInstance Type=local:ViewModelNewTable}"
         mc:Ignorable="d"
         Title="WindowTable" Height="360" Width="330">
-    <Grid  Background="Lavender">
+    <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="5*"/>
             <RowDefinition Height="5*"/>
@@ -47,7 +47,6 @@
                                 <sys:String>string</sys:String>
                                 <sys:String>int</sys:String>
                                 <sys:String>uint</sys:String>
-                                <sys:String>float</sys:String>
                                 <sys:String>double</sys:String>
                                 <sys:String>datetime</sys:String>
                             </ComboBox>

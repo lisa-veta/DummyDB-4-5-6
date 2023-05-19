@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Data;
@@ -10,21 +11,18 @@ using System.Windows.Controls;
 using System.Windows.Forms;
 using System.Windows.Input;
 using DummyDB.Core;
+using HardLab5.ViewModels;
+
 namespace HardLab5
 {
-    class ViewModelEditTable : INotifyPropertyChanged
+    class ViewModelEditTable : BaseViewModel
     {
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        protected void OnPropertyChanged([CallerMemberName] string prop = "")
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
-        }
-
         public ObservableCollection<ViewModelEditTable> Items { get; } = new ObservableCollection<ViewModelEditTable>();
-        private ObservableCollection<string> _names;
 
-        public ObservableCollection<string> ListOfColumns
+        public string folderPath;
+
+        private List<string> _names;
+        public List<string> ListOfColumns
         {
             get { return _names; }
             set
@@ -35,8 +33,6 @@ namespace HardLab5
         }
 
         public System.Windows.Controls.DataGrid DataGrid { get; set; }
-
-
         public TableScheme selectedScheme;
         public Table selectedTable;
         private DataTable _dataNewTable;
@@ -57,16 +53,6 @@ namespace HardLab5
             set
             {
                 _tableName = value;
-                OnPropertyChanged();
-            }
-        }
-        private string _message2;
-        public string Message2
-        {
-            get { return _message2; }
-            set
-            {
-                _message2 = value;
                 OnPropertyChanged();
             }
         }
@@ -110,7 +96,6 @@ namespace HardLab5
             get { return _columnName; }
             set
             {
-                //if (value == _text) return;
                 _columnName = value;
                 OnPropertyChanged();
             }
@@ -136,19 +121,6 @@ namespace HardLab5
                 OnPropertyChanged();
             }
         }
-
-        //public ViewModelEditTable()
-        //{
-        //    DataNewTable = MainViewModel.copyDataTable;
-        //    TableName = MainViewModel.tableName;
-        //    ObservableCollection<string> names = new ObservableCollection<string>();
-        //    foreach (var column in DataNewTable.Columns)
-        //    {
-        //        names.Add(column.ToString());
-        //    }
-        //    ListOfColumns = names;
-        //    ListOfColumns.Add("нет выбора");
-        //}
 
         public ICommand AddRow => new DelegateCommand(param =>
         {
@@ -231,7 +203,7 @@ namespace HardLab5
                 
             }
             string jsonNewScheme = JsonSerializer.Serialize(selectedScheme);
-            File.WriteAllText(MainViewModel.folderPath + $"\\{selectedScheme.Name}.json", jsonNewScheme);
+            File.WriteAllText(folderPath + $"\\{selectedScheme.Name}.json", jsonNewScheme);
             
             UpdateTable();
         });
@@ -244,10 +216,9 @@ namespace HardLab5
                 return;
             }
             RewriteCSV();
-            //UpdateTable();
         });
 
-        public bool GetEx()
+        private bool GetEx()
         {
             if (SelectedColumn != null && SelectedColumn != "" && NewColumnName != null && NewColumnName != "" && SelectedColumn != "нет выбора")
             {
@@ -268,14 +239,14 @@ namespace HardLab5
             return false;
         }
 
-        public void CreateNewFiles()
+        private void CreateNewFiles()
         {
-            File.Move(MainViewModel.folderPath + $"\\{selectedScheme.Name}.json", MainViewModel.folderPath + $"\\{TableName}.json");
-            File.Move(MainViewModel.folderPath + $"\\{selectedScheme.Name}.csv", MainViewModel.folderPath + $"\\{TableName}.csv");
+            File.Move(folderPath + $"\\{selectedScheme.Name}.json", folderPath + $"\\{TableName}.json");
+            File.Move(folderPath + $"\\{selectedScheme.Name}.csv", folderPath + $"\\{TableName}.csv");
             selectedScheme.Name = TableName;
         }
 
-        public void RemoveColumnName()
+        private void RemoveColumnName()
         {
             foreach (Column column in selectedScheme.Columns)
             {
@@ -286,15 +257,10 @@ namespace HardLab5
             }
         }
 
-        public bool AddNewColumn()
+        private bool AddNewColumn()
         {
             if(Items != null)
             {
-                //int countOfColumn = 0;
-                //foreach (Column column in selectedScheme.Columns)
-                //{
-                //    countOfColumn += 1;
-                //}
                 foreach (var item in Items)
                 {
                     Column column = new Column();
@@ -307,13 +273,12 @@ namespace HardLab5
                     column.IsPrimary = item.Primary;
                     selectedScheme.Columns.Add(column);
                     ListOfColumns.Add(column.Name);
-                   // countOfColumn += 1;
                     AddColumnInTable(column);
                 }
             }
             return false;
         }
-        public bool CheckEqualsNames(string location)
+        private bool CheckEqualsNames(string location)
         {
             if(location == "EditColumnName")
             {
@@ -345,7 +310,7 @@ namespace HardLab5
             return false;
         }
 
-        public void AddColumnInTable(Column column)
+        private void AddColumnInTable(Column column)
         {
             foreach (var row in selectedTable.Rows)
             {
@@ -357,11 +322,6 @@ namespace HardLab5
                             break;
                         }
                     case "int":
-                        {
-                            row.Data.Add(column, 0);
-                            break;
-                        }
-                    case "float":
                         {
                             row.Data.Add(column, 0);
                             break;
@@ -385,7 +345,7 @@ namespace HardLab5
             }
             RewriteCSV();
         }
-        public void DeleteColumn()
+        private void DeleteColumn()
         {
             foreach (Column column in selectedScheme.Columns)
             {
@@ -403,9 +363,9 @@ namespace HardLab5
             RewriteCSV();
         }
 
-        public void RewriteCSV()
+        private void RewriteCSV()
         {
-            string pathTable = MainViewModel.folderPath + $"\\{selectedScheme.Name}.csv";
+            string pathTable = folderPath + $"\\{selectedScheme.Name}.csv";
             int count = 1;
             StringBuilder newFile = new StringBuilder();
             foreach (var row in selectedTable.Rows)
@@ -425,7 +385,7 @@ namespace HardLab5
             File.WriteAllText(pathTable, newFile.ToString());
         }
 
-        public void DeleteTableRow(int rowNumber)
+        private void DeleteTableRow(int rowNumber)
         {
             int count = 0;
             foreach(Row row in selectedTable.Rows)
@@ -440,7 +400,7 @@ namespace HardLab5
             RewriteCSV();
         }
 
-        public void UpdateTable()
+        private void UpdateTable()
         {
             DataNewTable.Clear();
             DataTable dataTable = new DataTable();
@@ -462,28 +422,28 @@ namespace HardLab5
             ClearData();
         }
 
-        public void ClearData()
+        private void ClearData()
         {
             Items.Clear();
             NewColumnName = null;
             SelectedColumn = null;
+            SelectedColumnDelete = null;
 
             ListOfColumns.Clear();
-            ObservableCollection<string> names = new ObservableCollection<string>();
+            List<string> names = new List<string>();
             foreach (var column in DataNewTable.Columns)
             {
                 names.Add(column.ToString());
             }
+            names.Add("нет выбора");
             ListOfColumns = names;
-            ListOfColumns.Add("нет выбора");
         }
-        public bool EditTableData()
+        private bool EditTableData()
         {
             for (int i = 0; i < selectedTable.Rows.Count; i++)
             {
                 for (int j = 0; j < selectedScheme.Columns.Count; j++)
                 {
-                    //string data = DataNewTable.Rows[i][selectedScheme.Columns[j].Name].ToString();
                     if (selectedTable.Rows[i].Data[selectedScheme.Columns[j]].ToString() == DataNewTable.Rows[i][selectedScheme.Columns[j].Name].ToString())
                     {
                         continue;
@@ -519,7 +479,7 @@ namespace HardLab5
             return false;
         }
 
-        public object CheckCorrectData(int numOfRow, int numOfColumn)
+        private object CheckCorrectData(int numOfRow, int numOfColumn)
         {
             string data = DataNewTable.Rows[numOfRow][selectedScheme.Columns[numOfColumn].Name].ToString();
             switch (selectedScheme.Columns[numOfColumn].Type)
@@ -541,18 +501,6 @@ namespace HardLab5
                         if (int.TryParse(data, out int number))
                         {
                            return number;
-                        }
-                        else if (ShowMessage(numOfRow + 1, numOfColumn + 1))
-                        {
-                            return 0;
-                        }
-                        return null;
-                    }
-                case "float":
-                    {
-                        if (float.TryParse(data, out float number))
-                        {
-                            return number;
                         }
                         else if (ShowMessage(numOfRow + 1, numOfColumn + 1))
                         {
@@ -592,7 +540,7 @@ namespace HardLab5
             return null;
         }
 
-       public bool ShowMessage(int numOfRow, int numOfColumn)
+       private bool ShowMessage(int numOfRow, int numOfColumn)
         {
             DialogResult dialogResult = MessageBox.Show($"В строке {numOfRow} столбце {numOfColumn} введены некорректные данные или найдены пустые ячейки, они будут заполнены значениями по умолчанию", "Подтверждение действий", MessageBoxButtons.YesNo);
             if (dialogResult == DialogResult.Yes)

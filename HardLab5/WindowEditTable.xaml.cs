@@ -22,7 +22,7 @@ namespace HardLab5
         public WindowEditTable()
         {
             InitializeComponent();
-            DataContext = new ViewModelEditTable();
+           /// DataContext = new ViewModelEditTable();
         }
     }
 }
