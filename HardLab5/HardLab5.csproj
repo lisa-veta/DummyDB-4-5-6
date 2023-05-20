@@ -87,6 +87,7 @@
     <Compile Include="DelegateCommand.cs" />
     <Compile Include="ViewModels\BaseViewModel.cs" />
     <Compile Include="ViewModels\ColumnAdder.cs" />
+    <Compile Include="ViewModels\ElementRemover.cs" />
     <Compile Include="ViewModels\FileRewriter.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="ViewModels\ViewModelEditTable.cs" />

@@ -40,12 +40,14 @@ namespace HardLab5.ViewModels
             string jsonNewScheme = JsonSerializer.Serialize<TableScheme>(tableScheme);
 
             File.WriteAllText(pathScheme, jsonNewScheme);
-            ///string newFile = AddColumnInTable(columns);
             File.WriteAllText(pathTable, newFile);
+        }
 
-            ///System.Windows.MessageBox.Show("Успешно!");
-            ///Items.Clear();
-            ///TableName = null;
+        public static void RewriteFileName(string folderPath, TableScheme selectedScheme, string tableName)
+        {
+            File.Move(folderPath + $"\\{selectedScheme.Name}.json", folderPath + $"\\{tableName}.json");
+            File.Move(folderPath + $"\\{selectedScheme.Name}.csv", folderPath + $"\\{tableName}.csv");
+            selectedScheme.Name = tableName;
         }
     }
 }

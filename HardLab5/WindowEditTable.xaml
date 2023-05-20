@@ -52,12 +52,12 @@
         <TextBox Grid.Column="4" Grid.Row ="5" Text="{Binding NewColumnName}" TextWrapping="Wrap"  TextAlignment="Center"></TextBox>
 
         <TextBlock Grid.Column="1" Grid.Row ="7" Grid.ColumnSpan="2" Text="Добавить столбец" FontSize="14" TextWrapping="Wrap" VerticalAlignment="Center" TextAlignment="Center"></TextBlock>
-        <Button x:Name="Add" Command="{Binding  CreateColumn}" Grid.Column="3" Grid.Row="10"  Background="DarkSeaGreen">
+        <Button x:Name="Add" Command="{Binding  CreateNewColumn}" Grid.Column="3" Grid.Row="10"  Background="DarkSeaGreen">
             <Button.Content>
                 <TextBlock FontSize="14" Text="+" TextWrapping="Wrap" TextAlignment="Center"/>
             </Button.Content>
         </Button>
-        <Button x:Name="Remove" Command="{Binding  RemoveColumn}" Grid.Column="4" Grid.Row="10"  Background="DarkSeaGreen">
+        <Button x:Name="Remove" Command="{Binding  RemoveNewColumn}" Grid.Column="4" Grid.Row="10"  Background="DarkSeaGreen">
             <Button.Content>
                 <TextBlock FontSize="14" Text="-" TextWrapping="Wrap" TextAlignment="Center"/>
             </Button.Content>

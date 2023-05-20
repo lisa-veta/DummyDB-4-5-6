@@ -68,16 +68,7 @@ namespace HardLab5
         });
         public ICommand RemoveColumn => new DelegateCommand(param =>
         {
-            int count = 0;
-            foreach (var item in Items)
-            {
-                count += 1;
-                if (count == Items.Count)
-                {
-                    Items.Remove(item);
-                    break;
-                }
-            }
+            Items.RemoveAt(Items.Count - 1);
         });
 
         public ICommand CreateTable => new DelegateCommand(param =>
@@ -106,49 +97,6 @@ namespace HardLab5
             Items.Clear();
             TableName = null;
         });
-
-        //private string AddColumnInTable(List<Column> columns)
-        //{
-        //    StringBuilder newFile = new StringBuilder();
-        //    int count = 0;
-        //    foreach (var column in columns)
-        //    {
-        //        count += 1;
-        //        switch (column.Type)
-        //        {
-        //            case "uint":
-        //                {
-        //                    newFile.Append("0");
-        //                    break;
-        //                }
-        //            case "int":
-        //                {
-        //                    newFile.Append("0");
-        //                    break;
-        //                }
-        //            case "double":
-        //                {
-        //                    newFile.Append("0");
-        //                    break;
-        //                }
-        //            case "datetime":
-        //                {
-        //                    newFile.Append($"{DateTime.MinValue}");
-        //                    break;
-        //                }
-        //            case "string":
-        //                {
-        //                    newFile.Append($"");
-        //                    break;
-        //                }
-        //        }
-        //        if(count != columns.Count())
-        //        {
-        //            newFile.Append(";");
-        //        }
-        //    }
-        //    return newFile.ToString();
-        //}
 
         private bool CheckEqualsNames()
         {

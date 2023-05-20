@@ -129,24 +129,14 @@ namespace HardLab5
             DataNewTable.Rows.Add(newRow);
         });
 
-        public ICommand CreateColumn => new DelegateCommand(param =>
+        public ICommand CreateNewColumn => new DelegateCommand(param =>
         {
             Items.Add(new ViewModelEditTable());
-
         });
 
-        public ICommand RemoveColumn => new DelegateCommand(param =>
+        public ICommand RemoveNewColumn => new DelegateCommand(param =>
         {
-            int count = 0;
-            foreach(var item in Items)
-            {
-                count += 1;
-                if (count == Items.Count)
-                {
-                    Items.Remove(item);
-                    break;
-                }
-            }
+            Items.RemoveAt(Items.Count - 1);
         });
 
         public ICommand DeleteRow => new DelegateCommand(param =>
@@ -156,23 +146,7 @@ namespace HardLab5
                 MessageBox.Show("Строка для удаления не была выделена");
                 return;
             }
-            for(int i = 0; i < DataGrid.Columns.Count; i++)
-            {
-                if (DataGrid.Items[i] == DataGrid.SelectedItem)
-                {
-                    DialogResult dialogResult = MessageBox.Show($"Вы уверены, что хотите безвозвратно удалить {i+1} строку?", "Подтверждение действий", MessageBoxButtons.YesNo); ;
-                    if (dialogResult == DialogResult.Yes)
-                    {
-                        DeleteTableRow(i);
-                        UpdateTable();
-                        return;
-                    }
-                    else if (dialogResult == DialogResult.No)
-                    {
-                        return;
-                    }
-                }
-            }
+            RemoveRow();
         });
 
         public ICommand EditTable => new DelegateCommand(param =>
@@ -183,29 +157,18 @@ namespace HardLab5
             }
             if (MainViewModel.tableName != TableName && TableName != null && TableName != "")
             {
-                CreateNewFiles();
+                FileRewriter.RewriteFileName(folderPath, selectedScheme, TableName);
             }
             if(AddNewColumn())
             {
                 System.Windows.MessageBox.Show("Данные не заполнены до конца");
                 return;
             }
-            if (SelectedColumnDelete != null && SelectedColumnDelete != "нет выбора")
+            if (RemoveColumn())
             {
-                DialogResult dialogResult = MessageBox.Show("Вы уверены, что хотите безвозвратно удалить столбец?", "Подтверждение действий", MessageBoxButtons.YesNo);
-                if (dialogResult == DialogResult.Yes)
-                {
-                    DeleteColumn();
-                }
-                else if (dialogResult == DialogResult.No)
-                {
-                    return;
-                }
-                
+                return;
             }
-            string jsonNewScheme = JsonSerializer.Serialize(selectedScheme);
-            File.WriteAllText(folderPath + $"\\{selectedScheme.Name}.json", jsonNewScheme);
-            
+            FileRewriter.RewriteJson(folderPath, selectedScheme);
             UpdateTable();
         });
 
@@ -241,24 +204,6 @@ namespace HardLab5
             return false;
         }
 
-        private void CreateNewFiles()
-        {
-            File.Move(folderPath + $"\\{selectedScheme.Name}.json", folderPath + $"\\{TableName}.json");
-            File.Move(folderPath + $"\\{selectedScheme.Name}.csv", folderPath + $"\\{TableName}.csv");
-            selectedScheme.Name = TableName;
-        }
-
-        private void RemoveColumnName()
-        {
-            foreach (Column column in selectedScheme.Columns)
-            {
-                if (column.Name == SelectedColumn)
-                {
-                    column.Name = NewColumnName;
-                }
-            }
-        }
-
         private bool AddNewColumn()
         {
             if(Items != null)
@@ -274,10 +219,47 @@ namespace HardLab5
                     column.Type = item.Type;
                     column.IsPrimary = item.Primary;
                     selectedScheme.Columns.Add(column);
-                    ListOfColumns.Add(column.Name);
                     ColumnAdder.AddColumnInTable(column, selectedTable);
                     FileRewriter.RewriteCSV(folderPath, selectedTable, selectedScheme);
                 }
+            }
+            return false;
+        }
+
+        private void RemoveRow()
+        {
+            for (int i = 0; i < DataGrid.Columns.Count; i++)
+            {
+                if (DataGrid.Items[i] == DataGrid.SelectedItem)
+                {
+                    DialogResult dialogResult = MessageBox.Show($"Вы уверены, что хотите безвозвратно удалить {i + 1} строку?", "Подтверждение действий", MessageBoxButtons.YesNo); ;
+                    if (dialogResult == DialogResult.Yes)
+                    {
+                        selectedTable = ElementRemover.DeleteTableRow(i, selectedTable);
+                        FileRewriter.RewriteCSV(folderPath, selectedTable, selectedScheme);
+                        UpdateTable();
+                        return;
+                    }
+                    else if (dialogResult == DialogResult.No)
+                    {
+                        return;
+                    }
+                }
+            }
+        }
+
+        private bool RemoveColumn()
+        {
+            if (SelectedColumnDelete != null && SelectedColumnDelete != "нет выбора")
+            {
+                DialogResult dialogResult = MessageBox.Show("Вы уверены, что хотите безвозвратно удалить столбец?", "Подтверждение действий", MessageBoxButtons.YesNo);
+                if (dialogResult == DialogResult.Yes)
+                {
+                    ElementRemover.DeleteColumn(selectedScheme, selectedTable, SelectedColumnDelete);
+                    FileRewriter.RewriteCSV(folderPath, selectedTable, selectedScheme);
+                    return false;
+                }
+                return true;
             }
             return false;
         }
@@ -295,7 +277,7 @@ namespace HardLab5
                 }
                 if (SelectedColumn != null && SelectedColumn != "" && NewColumnName != null && NewColumnName != "" && SelectedColumn != "нет выбора")
                 {
-                    RemoveColumnName();
+                    ElementRemover.RemoveColumnName(selectedScheme, SelectedColumn, NewColumnName);
                 }
             }
             else if(location == "CreateNewColumn")
@@ -312,39 +294,6 @@ namespace HardLab5
                 }
             }
             return false;
-        }
-
-        private void DeleteColumn()
-        {
-            foreach (Column column in selectedScheme.Columns)
-            {
-                if (column.Name == SelectedColumnDelete)
-                {
-                    selectedScheme.Columns.Remove(column);
-                    ListOfColumns.Remove(column.Name);
-                    foreach (var row in selectedTable.Rows)
-                    {
-                        row.Data.Remove(column);
-                    }
-                    break;
-                }
-            }
-            FileRewriter.RewriteCSV(folderPath, selectedTable, selectedScheme);
-        }
-
-        private void DeleteTableRow(int rowNumber)
-        {
-            int count = 0;
-            foreach(Row row in selectedTable.Rows)
-            {
-                if(count == rowNumber)
-                {
-                    selectedTable.Rows.Remove(row);
-                    break;
-                }
-                count += 1;
-            }
-            FileRewriter.RewriteCSV(folderPath, selectedTable, selectedScheme);
         }
 
         private void UpdateTable()
@@ -375,8 +324,8 @@ namespace HardLab5
             NewColumnName = null;
             SelectedColumn = null;
             SelectedColumnDelete = null;
-
             ListOfColumns.Clear();
+
             List<string> names = new List<string>();
             foreach (var column in DataNewTable.Columns)
             {
