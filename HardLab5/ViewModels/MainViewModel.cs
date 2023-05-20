@@ -19,7 +19,7 @@ namespace HardLab5
         private List<TableScheme> schemes = new List<TableScheme>();
         private int countOfTables;
         private int countOfSchemes;
-        public string folderPath = "";
+        public static string folderPath = "";
         public static string tableName;
         private  TableScheme selectedScheme;
         private Table selectedTable;

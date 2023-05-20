@@ -18,7 +18,6 @@ namespace HardLab5
     {
         public ObservableCollection<ViewModelNewTable> Items { get; } = new ObservableCollection<ViewModelNewTable>();
 
-
         public string folderPath;
         private string _columnName;
         public string ColumnName
@@ -63,7 +62,6 @@ namespace HardLab5
                 OnPropertyChanged();
             }
         }
-
         public ICommand CreateColumns => new DelegateCommand(param =>
         {
             Items.Add(new ViewModelNewTable());
@@ -102,51 +100,55 @@ namespace HardLab5
                 System.Windows.MessageBox.Show("Найдены столбцы с повторяющимися именами");
                 return;
             }
-            CreateFiles(tableScheme, columns);
+            string newFile = ColumnAdder.AddColumnInNewTable(columns);
+            FileRewriter.CreateFiles(folderPath, tableScheme, newFile);
+            System.Windows.MessageBox.Show("Успешно!");
+            Items.Clear();
+            TableName = null;
         });
 
-        private string AddColumnInTable(List<Column> columns)
-        {
-            StringBuilder newFile = new StringBuilder();
-            int count = 0;
-            foreach (var column in columns)
-            {
-                count += 1;
-                switch (column.Type)
-                {
-                    case "uint":
-                        {
-                            newFile.Append("0");
-                            break;
-                        }
-                    case "int":
-                        {
-                            newFile.Append("0");
-                            break;
-                        }
-                    case "double":
-                        {
-                            newFile.Append("0");
-                            break;
-                        }
-                    case "datetime":
-                        {
-                            newFile.Append($"{DateTime.MinValue}");
-                            break;
-                        }
-                    case "string":
-                        {
-                            newFile.Append($"");
-                            break;
-                        }
-                }
-                if(count != columns.Count())
-                {
-                    newFile.Append(";");
-                }
-            }
-            return newFile.ToString();
-        }
+        //private string AddColumnInTable(List<Column> columns)
+        //{
+        //    StringBuilder newFile = new StringBuilder();
+        //    int count = 0;
+        //    foreach (var column in columns)
+        //    {
+        //        count += 1;
+        //        switch (column.Type)
+        //        {
+        //            case "uint":
+        //                {
+        //                    newFile.Append("0");
+        //                    break;
+        //                }
+        //            case "int":
+        //                {
+        //                    newFile.Append("0");
+        //                    break;
+        //                }
+        //            case "double":
+        //                {
+        //                    newFile.Append("0");
+        //                    break;
+        //                }
+        //            case "datetime":
+        //                {
+        //                    newFile.Append($"{DateTime.MinValue}");
+        //                    break;
+        //                }
+        //            case "string":
+        //                {
+        //                    newFile.Append($"");
+        //                    break;
+        //                }
+        //        }
+        //        if(count != columns.Count())
+        //        {
+        //            newFile.Append(";");
+        //        }
+        //    }
+        //    return newFile.ToString();
+        //}
 
         private bool CheckEqualsNames()
         {
@@ -162,6 +164,7 @@ namespace HardLab5
             }
             return false;
         }
+
         private List<Column> GetList()
         {
             List<Column> columns = new List<Column>();
@@ -186,21 +189,6 @@ namespace HardLab5
                 }
             }
             return false;
-        }
-
-        private void CreateFiles(TableScheme tableScheme, List<Column> columns)
-        {
-            string pathScheme = folderPath + $"\\{tableScheme.Name}.json";
-            string pathTable = folderPath + $"\\{tableScheme.Name}.csv";
-            string jsonNewScheme = JsonSerializer.Serialize<TableScheme>(tableScheme);
-            
-            File.WriteAllText(pathScheme, jsonNewScheme);
-            string newFile = AddColumnInTable(columns);
-            File.WriteAllText(pathTable, newFile);
-
-            System.Windows.MessageBox.Show("Успешно!");
-            Items.Clear();
-            TableName = null;
         }
     }
 }

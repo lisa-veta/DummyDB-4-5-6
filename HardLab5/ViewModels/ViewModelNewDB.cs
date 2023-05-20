@@ -52,12 +52,11 @@ namespace HardLab5
                 MessageBox.Show("Вы не ввели имя БД или не выбрали путь!");
                 return;
             }
-            folderPathDB += "\\" + NewName;
-
             Directory.CreateDirectory(folderPathDB);
             MessageBox.Show("Папка для новой БД успешно создана! " + Message + "\n");
             NewName = "";
             string folderName = folderPathDB.Split('\\')[folderPathDB.Split('\\').Length - 1];
+            ((MainWindow)System.Windows.Application.Current.MainWindow).folderTree.Items.Clear();
             ((MainWindow)System.Windows.Application.Current.MainWindow).folderTree.Header = folderName;
             folderPath = folderPathDB;
             ClearData();
@@ -72,6 +71,7 @@ namespace HardLab5
 
         private void ClearData()
         {
+            MainViewModel.folderPath = folderPath;
             NewName = null;
             Message = null;
         }

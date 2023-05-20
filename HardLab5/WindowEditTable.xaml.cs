@@ -22,7 +22,6 @@ namespace HardLab5
         public WindowEditTable()
         {
             InitializeComponent();
-           /// DataContext = new ViewModelEditTable();
         }
     }
 }
