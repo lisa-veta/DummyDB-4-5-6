@@ -1,7 +1,5 @@
 ﻿using HardLab5.ViewModels;
-using System.ComponentModel;
 using System.IO;
-using System.Runtime.CompilerServices;
 using System.Windows.Forms;
 using System.Windows.Input;
 namespace HardLab5

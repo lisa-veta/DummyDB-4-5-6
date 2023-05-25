@@ -3,9 +3,6 @@ using HardLab5.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Input;
 
@@ -65,6 +62,28 @@ namespace HardLab5
             FileRewriter.RewriteCSV(folderPath, selectedTable, selectedScheme);
         });
 
+        private void RemoveRow()
+        {
+            for (int i = 0; i < DataGrid.Columns.Count; i++)
+            {
+                if (DataGrid.Items[i] == DataGrid.SelectedItem)
+                {
+                    DialogResult dialogResult = MessageBox.Show($"Вы уверены, что хотите безвозвратно удалить {i + 1} строку?", "Подтверждение действий", MessageBoxButtons.YesNo); ;
+                    if (dialogResult == DialogResult.Yes)
+                    {
+                        selectedTable = ElementRemover.DeleteTableRow(i, selectedTable);
+                        FileRewriter.RewriteCSV(folderPath, selectedTable, selectedScheme);
+                        UpdateTable();
+                        return;
+                    }
+                    else if (dialogResult == DialogResult.No)
+                    {
+                        return;
+                    }
+                }
+            }
+        }
+
         private void UpdateTable()
         {
             DataNewTable.Clear();
@@ -112,28 +131,6 @@ namespace HardLab5
             return false;
         }
 
-        private void RemoveRow()
-        {
-            for (int i = 0; i < DataGrid.Columns.Count; i++)
-            {
-                if (DataGrid.Items[i] == DataGrid.SelectedItem)
-                {
-                    DialogResult dialogResult = MessageBox.Show($"Вы уверены, что хотите безвозвратно удалить {i + 1} строку?", "Подтверждение действий", MessageBoxButtons.YesNo); ;
-                    if (dialogResult == DialogResult.Yes)
-                    {
-                        selectedTable = ElementRemover.DeleteTableRow(i, selectedTable);
-                        FileRewriter.RewriteCSV(folderPath, selectedTable, selectedScheme);
-                        UpdateTable();
-                        return;
-                    }
-                    else if (dialogResult == DialogResult.No)
-                    {
-                        return;
-                    }
-                }
-            }
-        }
-
         private object CheckCorrectData(int numOfRow, int numOfColumn)
         {
             string data = DataNewTable.Rows[numOfRow][selectedScheme.Columns[numOfColumn].Name].ToString();
@@ -169,7 +166,7 @@ namespace HardLab5
             {
                 return number;
             }
-            else if (ShowMessage(numOfRow + 1, numOfColumn + 1))
+            else if (ShowMessage(numOfRow + 1, numOfColumn + 1, "uint"))
             {
                 return 0;
             }
@@ -181,7 +178,7 @@ namespace HardLab5
             {
                 return number;
             }
-            else if (ShowMessage(numOfRow + 1, numOfColumn + 1))
+            else if (ShowMessage(numOfRow + 1, numOfColumn + 1, "int"))
             {
                 return 0;
             }
@@ -193,7 +190,7 @@ namespace HardLab5
             {
                 return number;
             }
-            else if (ShowMessage(numOfRow + 1, numOfColumn + 1))
+            else if (ShowMessage(numOfRow + 1, numOfColumn + 1, "double"))
             {
                 return 0;
             }
@@ -206,16 +203,16 @@ namespace HardLab5
             {
                 return number;
             }
-            else if (ShowMessage(numOfRow + 1, numOfColumn + 1))
+            else if (ShowMessage(numOfRow + 1, numOfColumn + 1, "DateTime"))
             {
                 return DateTime.MinValue;
             }
             return null;
         }
 
-        private bool ShowMessage(int numOfRow, int numOfColumn)
+        private bool ShowMessage(int numOfRow, int numOfColumn, string type)
         {
-            DialogResult dialogResult = MessageBox.Show($"В строке {numOfRow} столбце {numOfColumn} введены некорректные данные или найдены пустые ячейки, они будут заполнены значениями по умолчанию", "Подтверждение действий", MessageBoxButtons.YesNo);
+            DialogResult dialogResult = MessageBox.Show($"В строке {numOfRow} столбце {numOfColumn} введены некорректные данные или найдены пустые ячейки, они будут заполнены значениями по умолчанию \n(Ячейка должна быть типа {type})", "Подтверждение действий", MessageBoxButtons.YesNo);
             if (dialogResult == DialogResult.Yes)
             {
                 return true;

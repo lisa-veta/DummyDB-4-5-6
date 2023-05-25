@@ -27,9 +27,10 @@
             <ColumnDefinition Width="150*" />
             <ColumnDefinition Width="10*" />
         </Grid.ColumnDefinitions>
-        <Menu VerticalAlignment="Center" Grid.Column="1" Grid.ColumnSpan="6">
+
+        <Menu VerticalAlignment="Center" Grid.Column="1" Grid.ColumnSpan="7">
             <MenuItem Header="Файл" >
-                <MenuItem Command="{Binding  OpenDataFile}" Header="Открыть файл"/>
+                <MenuItem Command="{Binding  OpenDataFile}" Header="Открыть файл" FontSize="14"/>
             </MenuItem>
         </Menu>
 
