@@ -10,7 +10,7 @@ namespace HardLab5
     public  class ElementRemover
     {
 
-        public static void DeleteColumn(TableScheme selectedScheme, Table selectedTable, string selectedColumnDelete)
+        public static void DeleteTableColumn(TableScheme selectedScheme, Table selectedTable, string selectedColumnDelete)
         {
             foreach (Column column in selectedScheme.Columns)
             {

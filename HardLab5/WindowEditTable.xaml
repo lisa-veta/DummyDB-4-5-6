@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:HardLab5" xmlns:sys="clr-namespace:System;assembly=mscorlib" d:DataContext="{d:DesignInstance Type=local:ViewModelEditTable}"
         mc:Ignorable="d"
-        Title="WindowEditTable" Height="700" Width="900">
+        Title="WindowEditTable" Height="700" Width="700">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="20*"/>
@@ -27,11 +27,6 @@
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="10*" />
-            <ColumnDefinition Width="75*" />
-            <ColumnDefinition Width="75*" />
-            <ColumnDefinition Width="75*" />
-            <ColumnDefinition Width="75*" />
-            <ColumnDefinition Width="5*" />
             <ColumnDefinition Width="75*" />
             <ColumnDefinition Width="75*" />
             <ColumnDefinition Width="75*" />
@@ -97,29 +92,5 @@
                 <TextBlock FontSize="14" Text="Сохранить изменения" TextWrapping="Wrap" TextAlignment="Center"/>
             </Button.Content>
         </Button>
-
-        <TextBlock Grid.Column="6" Grid.Row ="4"  Grid.ColumnSpan="4" FontSize="17" Text="Редактирование данных" TextWrapping="Wrap" TextAlignment="Center" VerticalAlignment="Center" Background="DarkSeaGreen"></TextBlock>
-
-
-        <Button x:Name="AddRow" Command="{Binding  AddRow}" Grid.Column="7" Grid.ColumnSpan="2" Grid.Row="5"  Background="DarkSeaGreen">
-            <Button.Content>
-                <TextBlock FontSize="14" Text="Добавить строку" TextWrapping="Wrap" TextAlignment="Center"/>
-            </Button.Content>
-        </Button>
-
-        
-        <Button x:Name="DeleteRow" Command="{Binding  DeleteRow}" Grid.Column="7" Grid.ColumnSpan="2" Grid.Row="7"  Background="DarkSeaGreen">
-            <Button.Content>
-                <TextBlock FontSize="14" Text="Удалить выделенную строку" TextWrapping="Wrap" TextAlignment="Center"/>
-            </Button.Content>
-        </Button>
-
-
-        <Button x:Name="EditRows" Command="{Binding  EditRows}" Grid.Column="7" Grid.ColumnSpan="2" Grid.Row="14"  Background="DarkSeaGreen">
-            <Button.Content>
-                <TextBlock FontSize="14" Text="Сохранить новые данные" TextWrapping="Wrap" TextAlignment="Center"/>
-            </Button.Content>
-        </Button>
-
     </Grid>
 </Window>

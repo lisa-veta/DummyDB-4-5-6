@@ -91,10 +91,14 @@
     <Compile Include="Models\FileRewriter.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="ViewModels\ViewModelEditTable.cs" />
+    <Compile Include="ViewModels\ViewModelEditTableData.cs" />
     <Compile Include="ViewModels\ViewModelNewDB.cs" />
     <Compile Include="ViewModels\ViewModelNewTable.cs" />
     <Compile Include="WindowEditTable.xaml.cs">
       <DependentUpon>WindowEditTable.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="WindowEditTableData.xaml.cs">
+      <DependentUpon>WindowEditTableData.xaml</DependentUpon>
     </Compile>
     <Compile Include="WindowTable.xaml.cs">
       <DependentUpon>WindowTable.xaml</DependentUpon>
@@ -115,6 +119,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="WindowEditTable.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="WindowEditTableData.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

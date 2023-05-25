@@ -18,7 +18,7 @@ namespace HardLab5
         private int countOfSchemes;
         public static string folderPath = "";
         public static string tableName;
-        private  TableScheme selectedScheme;
+        private TableScheme selectedScheme;
         private Table selectedTable;
 
         private DataTable _dataTable;
@@ -55,7 +55,7 @@ namespace HardLab5
             if (path == "")
             {
                 Message = "!СООБЩЕНИЕ! Вы не выбрали папку";
-                if(folderPath != "")
+                if (folderPath != "")
                 {
                     GetEquals(folderPath);
                 }
@@ -73,7 +73,7 @@ namespace HardLab5
             countOfSchemes = countOfTables = 0;
             schemes = RewriteList();
             ((MainWindow)System.Windows.Application.Current.MainWindow).folderTree.Items.Clear();
-            foreach (string  fileTable in Directory.EnumerateFiles(folderPath))
+            foreach (string fileTable in Directory.EnumerateFiles(folderPath))
             {
                 if (fileTable.Contains("csv"))
                 {
@@ -133,8 +133,8 @@ namespace HardLab5
         private void GetExeption()
         {
             if (countOfTables > countOfSchemes || keyTables.Count < countOfTables)
-            { 
-                 Message = "!СООБЩЕНИЕ! не все таблицы будут отображены, так как в файле недостаточно схем\\корректных схем";
+            {
+                Message = "!СООБЩЕНИЕ! не все таблицы будут отображены, так как в файле недостаточно схем\\корректных схем";
             }
             else if (countOfTables < countOfSchemes)
             {
@@ -185,7 +185,7 @@ namespace HardLab5
 
         public ICommand UpdateFile => new DelegateCommand(param =>
         {
-            if(folderPath == "")
+            if (folderPath == "")
             {
                 return;
             }
@@ -245,5 +245,27 @@ namespace HardLab5
                 System.Windows.MessageBox.Show("Сначала выберите таблицу");
             }
         });
+
+        public ICommand EditTableData => new DelegateCommand(param =>
+        {
+            if (DataTable != null)
+            {
+                WindowEditTableData wind = new WindowEditTableData();
+                ViewModelEditTableData vmEditTableData = new ViewModelEditTableData();
+                wind.DataContext = vmEditTableData;
+                vmEditTableData.DataGrid = wind.DataGridEditTable;
+                vmEditTableData.DataNewTable = DataTable;
+                vmEditTableData.TableName = tableName;
+                vmEditTableData.folderPath = folderPath;
+                vmEditTableData.selectedScheme = selectedScheme;
+                vmEditTableData.selectedTable = selectedTable;
+                wind.ShowDialog();
+            }
+            else
+            {
+                System.Windows.MessageBox.Show("Сначала выберите таблицу");
+            }
+        });
+
     }
 }
