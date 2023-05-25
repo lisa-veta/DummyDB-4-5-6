@@ -68,16 +68,30 @@ namespace HardLab5
         });
         public ICommand RemoveColumn => new DelegateCommand(param =>
         {
-            Items.RemoveAt(Items.Count - 1);
+            if(Items.Count > 0)
+            {
+                Items.RemoveAt(Items.Count - 1);
+            }
+            return;
         });
 
         public ICommand CreateTable => new DelegateCommand(param =>
         {
-            if (TableName == null || TableName == "" || Items.Count == 0 || CheckEqualsData())
+            if (TableName == null || TableName == "" || Items.Count == 0 || CheckData())
             {
                 MessageBox.Show("Данные не заполнены до конца");
                 return;
             }
+            if (CheckEqualsNames())
+            {
+                System.Windows.MessageBox.Show("Найдены столбцы с повторяющимися именами");
+                return;
+            }
+            CreateNewTable();
+        });
+
+        private void CreateNewTable() 
+        {
             string name = TableName;
             List<Column> columns = GetList();
             TableScheme tableScheme = new TableScheme
@@ -85,18 +99,12 @@ namespace HardLab5
                 Name = name,
                 Columns = columns
             };
-
-            if (CheckEqualsNames())
-            {
-                System.Windows.MessageBox.Show("Найдены столбцы с повторяющимися именами");
-                return;
-            }
             string newFile = ColumnAdder.AddColumnInNewTable(columns);
             FileRewriter.CreateFiles(folderPath, tableScheme, newFile);
             System.Windows.MessageBox.Show("Успешно!");
             Items.Clear();
             TableName = null;
-        });
+        }
 
         private bool CheckEqualsNames()
         {
@@ -127,7 +135,7 @@ namespace HardLab5
             return columns;
         }
 
-        private bool CheckEqualsData()
+        private bool CheckData()
         {
             foreach (var item in Items)
             {

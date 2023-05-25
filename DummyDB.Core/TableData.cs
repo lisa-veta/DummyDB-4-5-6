@@ -8,9 +8,11 @@ namespace DummyDB.Core
     {
         public static Table GetInfoFromTable(TableScheme tableScheme,  string pathTable)
         {
-            Table table = new Table();
-            table.Rows = new List<Row>();
-            table.Scheme = tableScheme;
+            Table table = new Table
+            {
+                Rows = new List<Row>(),
+                Scheme = tableScheme
+            };
 
             string[] lines = File.ReadAllLines(pathTable);
             for (int i = 0; i < lines.Length; i++)
@@ -84,15 +86,6 @@ namespace DummyDB.Core
             }
             throw new ArgumentException($"Ошибка в файле <{pathTable}>, в строке номер {numberOfLine + 1}, столбце номер  {numberOfColumn + 1}. Описание ошибки: некорректные данные");
         }
-
-        //private static float CheckFloat(string element, string pathTable, int numberOfLine, int numberOfColumn)
-        //{
-        //    if (float.TryParse(element, out float number))
-        //    {
-        //        return number;
-        //    }
-        //    throw new ArgumentException($"Ошибка в файле <{pathTable}>, в строке номер {numberOfLine + 1}, столбце номер  {numberOfColumn + 1}. Описание ошибки: некорректные данные");
-        //}
 
         private static double CheckDouble(string element, string pathTable, int numberOfLine, int numberOfColumn)
         {

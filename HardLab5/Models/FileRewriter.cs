@@ -7,7 +7,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace HardLab5.ViewModels
+namespace HardLab5
 {
     public class FileRewriter
     {
@@ -31,6 +31,12 @@ namespace HardLab5.ViewModels
                 count = 1;
             }
             File.WriteAllText(pathTable, newFile.ToString());
+        }
+
+        public static void RewriteJson(string folderPath, TableScheme selectedScheme)
+        {
+            string jsonNewScheme = JsonSerializer.Serialize(selectedScheme);
+            File.WriteAllText(folderPath + $"\\{selectedScheme.Name}.json", jsonNewScheme);
         }
 
         public static void CreateFiles(string folderPath, TableScheme tableScheme, string newFile)

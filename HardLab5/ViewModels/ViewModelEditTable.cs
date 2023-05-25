@@ -136,7 +136,11 @@ namespace HardLab5
 
         public ICommand RemoveNewColumn => new DelegateCommand(param =>
         {
-            Items.RemoveAt(Items.Count - 1);
+            if (Items.Count > 0)
+            {
+                Items.RemoveAt(Items.Count - 1);
+            }
+            return;
         });
 
         public ICommand DeleteRow => new DelegateCommand(param =>
@@ -151,7 +155,7 @@ namespace HardLab5
 
         public ICommand EditTable => new DelegateCommand(param =>
         {
-            if (GetEx())
+            if (GetExeption())
             {
                 return;
             }
@@ -164,12 +168,10 @@ namespace HardLab5
                 System.Windows.MessageBox.Show("Данные не заполнены до конца");
                 return;
             }
-            if (RemoveColumn())
+            if(RemoveColumn())
             {
                 return;
             }
-            FileRewriter.RewriteJson(folderPath, selectedScheme);
-            UpdateTable();
         });
 
 
@@ -183,7 +185,29 @@ namespace HardLab5
             FileRewriter.RewriteCSV(folderPath, selectedTable, selectedScheme);
         });
 
-        private bool GetEx()
+        private void RemoveRow()
+        {
+            for (int i = 0; i < DataGrid.Columns.Count; i++)
+            {
+                if (DataGrid.Items[i] == DataGrid.SelectedItem)
+                {
+                    DialogResult dialogResult = MessageBox.Show($"Вы уверены, что хотите безвозвратно удалить {i + 1} строку?", "Подтверждение действий", MessageBoxButtons.YesNo); ;
+                    if (dialogResult == DialogResult.Yes)
+                    {
+                        selectedTable = ElementRemover.DeleteTableRow(i, selectedTable);
+                        FileRewriter.RewriteCSV(folderPath, selectedTable, selectedScheme);
+                        UpdateTable();
+                        return;
+                    }
+                    else if (dialogResult == DialogResult.No)
+                    {
+                        return;
+                    }
+                }
+            }
+        }
+
+        private bool GetExeption()
         {
             if (SelectedColumn != null && SelectedColumn != "" && NewColumnName != null && NewColumnName != "" && SelectedColumn != "нет выбора")
             {
@@ -210,11 +234,11 @@ namespace HardLab5
             {
                 foreach (var item in Items)
                 {
-                    Column column = new Column();
                     if (item.ColumnName == null || item.ColumnName == "" || item.Type == null)
                     {
                         return true;
                     }
+                    Column column = new Column();
                     column.Name = item.ColumnName;
                     column.Type = item.Type;
                     column.IsPrimary = item.Primary;
@@ -223,29 +247,9 @@ namespace HardLab5
                     FileRewriter.RewriteCSV(folderPath, selectedTable, selectedScheme);
                 }
             }
+            Items.Clear();
+            UpdateTable();
             return false;
-        }
-
-        private void RemoveRow()
-        {
-            for (int i = 0; i < DataGrid.Columns.Count; i++)
-            {
-                if (DataGrid.Items[i] == DataGrid.SelectedItem)
-                {
-                    DialogResult dialogResult = MessageBox.Show($"Вы уверены, что хотите безвозвратно удалить {i + 1} строку?", "Подтверждение действий", MessageBoxButtons.YesNo); ;
-                    if (dialogResult == DialogResult.Yes)
-                    {
-                        selectedTable = ElementRemover.DeleteTableRow(i, selectedTable);
-                        FileRewriter.RewriteCSV(folderPath, selectedTable, selectedScheme);
-                        UpdateTable();
-                        return;
-                    }
-                    else if (dialogResult == DialogResult.No)
-                    {
-                        return;
-                    }
-                }
-            }
         }
 
         private bool RemoveColumn()
@@ -255,8 +259,10 @@ namespace HardLab5
                 DialogResult dialogResult = MessageBox.Show("Вы уверены, что хотите безвозвратно удалить столбец?", "Подтверждение действий", MessageBoxButtons.YesNo);
                 if (dialogResult == DialogResult.Yes)
                 {
-                    ElementRemover.DeleteColumn(selectedScheme, selectedTable, SelectedColumnDelete);
+                    ElementRemover.DeleteTableColumn(selectedScheme, selectedTable, SelectedColumnDelete);
                     FileRewriter.RewriteCSV(folderPath, selectedTable, selectedScheme);
+                    SelectedColumnDelete = null;
+                    UpdateTable();
                     return false;
                 }
                 return true;
@@ -275,10 +281,7 @@ namespace HardLab5
                         return true;
                     }
                 }
-                if (SelectedColumn != null && SelectedColumn != "" && NewColumnName != null && NewColumnName != "" && SelectedColumn != "нет выбора")
-                {
-                    ElementRemover.RemoveColumnName(selectedScheme, SelectedColumn, NewColumnName);
-                }
+                EditColumnName();
             }
             else if(location == "CreateNewColumn")
             {
@@ -286,7 +289,7 @@ namespace HardLab5
                 {
                     foreach (Column column in selectedScheme.Columns)
                     {
-                        if ((column.Name == item.ColumnName || item.ColumnName == NewColumnName) && NewColumnName != null)
+                        if ((column.Name == item.ColumnName || item.ColumnName == NewColumnName) && item.ColumnName != null)
                         {
                             return true;
                         }
@@ -294,6 +297,17 @@ namespace HardLab5
                 }
             }
             return false;
+        }
+        
+        private void EditColumnName()
+        {
+            if (SelectedColumn != null && SelectedColumn != "" && NewColumnName != null && NewColumnName != "" && SelectedColumn != "нет выбора")
+            {
+                ElementRemover.RemoveColumnName(selectedScheme, SelectedColumn, NewColumnName);
+                UpdateTable();
+                NewColumnName = null;
+                SelectedColumn = null;
+            }
         }
 
         private void UpdateTable()
@@ -315,17 +329,13 @@ namespace HardLab5
                 dataTable.Rows.Add(newRow);
             }
             DataNewTable = dataTable;
-            ClearData();
+            FileRewriter.RewriteJson(folderPath, selectedScheme);
+            UpdateList();
         }
 
-        private void ClearData()
+        private void UpdateList()
         {
-            Items.Clear();
-            NewColumnName = null;
-            SelectedColumn = null;
-            SelectedColumnDelete = null;
             ListOfColumns.Clear();
-
             List<string> names = new List<string>();
             foreach (var column in DataNewTable.Columns)
             {

@@ -28,7 +28,7 @@
         <TextBlock Grid.Column="1" Grid.Row="3"  Grid.ColumnSpan="2" VerticalAlignment="Center" HorizontalAlignment="Center">Выберите путь:</TextBlock>
         <Button x:Name="Createfile" Command="{Binding  CreateNewFile}" Grid.ColumnSpan="2" Grid.Column="1" Grid.Row="4" Content="Выбрать путь"  Background="DarkSeaGreen"/>
         <TextBlock x:Name="TextBlock" Text="{Binding  Message}" Grid.Column="1" Grid.Row="5" Grid.ColumnSpan="2"  TextWrapping="Wrap"></TextBlock>
-        <Button x:Name="OK" Command="{Binding  Create}" Grid.Column="1" Grid.Row="6" Content="Cоздать"   Background="DarkSeaGreen"/>
+        <Button x:Name="OK" Command="{Binding  CreateDB}" Grid.Column="1" Grid.Row="6" Content="Cоздать"   Background="DarkSeaGreen"/>
         <Button x:Name="NO" Command="{Binding  UndoAction}" Grid.Column="2" Grid.Row="6" Content="Отменить"  Background="DarkSeaGreen"/>
         
     </Grid>

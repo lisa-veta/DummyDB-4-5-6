@@ -45,22 +45,14 @@ namespace HardLab5
             Message = "Путь к папке:\n" + folderPathDB;
         });
 
-        public ICommand Create => new DelegateCommand(param =>
+        public ICommand CreateDB => new DelegateCommand(param =>
         {
             if (folderPathDB == "" || NewName == "" || NewName == null)
             {
                 MessageBox.Show("Вы не ввели имя БД или не выбрали путь!");
                 return;
             }
-            Directory.CreateDirectory(folderPathDB);
-            MessageBox.Show("Папка для новой БД успешно создана! " + Message + "\n");
-            NewName = "";
-            string folderName = folderPathDB.Split('\\')[folderPathDB.Split('\\').Length - 1];
-            ((MainWindow)System.Windows.Application.Current.MainWindow).folderTree.Items.Clear();
-            ((MainWindow)System.Windows.Application.Current.MainWindow).folderTree.Header = folderName;
-            folderPath = folderPathDB;
-            ClearData();
-            WindowDB.Close();
+            CreateNewDB();
         });
 
         public ICommand UndoAction => new DelegateCommand(param =>
@@ -69,9 +61,23 @@ namespace HardLab5
             ClearData();
         });
 
+        private void CreateNewDB()
+        {
+            Directory.CreateDirectory(folderPathDB);
+            MessageBox.Show("Папка для новой БД успешно создана! " + Message + "\n");
+            NewName = "";
+            string folderName = folderPathDB.Split('\\')[folderPathDB.Split('\\').Length - 1];
+            ((MainWindow)System.Windows.Application.Current.MainWindow).folderTree.Items.Clear();
+            ((MainWindow)System.Windows.Application.Current.MainWindow).folderTree.Header = folderName;
+            folderPath = folderPathDB;
+            MainViewModel.folderPath = folderPath;
+            ClearData();
+            WindowDB.Close();
+        }
+
         private void ClearData()
         {
-            MainViewModel.folderPath = folderPath;
+            folderPathDB = null;
             NewName = null;
             Message = null;
         }

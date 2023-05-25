@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HardLab5.ViewModels
+namespace HardLab5
 {
     public  class ElementRemover
     {

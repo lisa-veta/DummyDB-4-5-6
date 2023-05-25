@@ -1,9 +1,6 @@
 ﻿using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Data;
 using System.IO;
-using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms;
@@ -177,9 +174,9 @@ namespace HardLab5
             for (int i = 0; i < keyTable.Value.Rows.Count; i++)
             {
                 DataRow newRow = dataTable.NewRow();
-                foreach (var rows in keyTable.Value.Rows[i].Data)
+                foreach (var element in keyTable.Value.Rows[i].Data)
                 {
-                    newRow[rows.Key.Name] = rows.Value;
+                    newRow[element.Key.Name] = element.Value;
                 }
                 dataTable.Rows.Add(newRow);
             }
